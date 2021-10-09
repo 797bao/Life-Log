@@ -1,0 +1,135 @@
+body {
+	background-color: #aeaeae;
+	font-size: 16px;
+	font-family: 'Lato', sans-serif;
+	font-weight: 300;
+	margin: 0;
+	color: #666;
+}
+
+/* Typography */
+h1{
+	text-transform: uppercase;
+	color: black;
+	font-weight: 500;
+	letter-spacing: 2px;
+	font-size: 2.0em;
+	line-height: 2.8em;
+}
+
+h2 {
+	color: white;
+	font-weight: 300;
+	letter-spacing: 1px;
+	font-size: 1.2em;
+	line-height: 2.8em;
+}
+
+/* ---------- Home Page ---------- */
+.home {
+	margin: 0 auto;
+	position: absolute;
+  	top: 50%;
+  	left: 50%;
+	text-align: center;
+	-ms-transform: translate(-50%, -50%);
+  	transform: translate(-50%, -50%);
+}
+
+.home h1{
+	border: #888;
+	background-color: white;
+	border-radius: 5px;
+	border-style: solid;
+	box-shadow: 0 5px 50px rgba(0,0,0,0.4);
+}
+
+.home a {
+	text-decoration: none;
+	color: #666;
+}
+
+.home a:hover {
+	color: white;
+}
+
+/* ---------- Log In Page ---------- */
+.login-box {
+	background-color: white;
+	max-width: 340px;
+	margin: 0 auto;
+	position: absolute;
+  	top: 50%;
+  	left: 50%;
+	padding: 50px 30px;
+	border-radius: 5px;
+	box-shadow: 0 5px 50px rgba(0,0,0,0.4);
+	text-align: center;
+	-ms-transform: translate(-50%, -50%);
+  	transform: translate(-50%, -50%);
+}
+
+.login-box label {
+	font-weight: 700;
+	font-size: .8em;
+	color: #888;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	line-height: 2em;
+}
+
+.login-box input {
+	margin-bottom: 20px;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 2px;
+	font-size: .9em;
+	color: #888;
+}
+
+.login-box input:focus {
+	outline: none;
+	border-color: #665851;
+	transition: 0.5s;
+	color: #665851;
+}
+
+.login-box button {
+	margin-top: 0px;
+	border: 0;
+	border-radius: 2px;
+	color: white;
+	padding: 10px;
+	text-transform: uppercase;
+	font-weight: 400;
+	font-size: 0.7em;
+	letter-spacing: 1px;
+	background-color: #665851;
+	cursor:pointer;
+	outline: none;
+}
+
+.login-box button:hover {
+	opacity: 0.7;
+	transition: 0.5s;
+}
+
+.login-box button:hover {
+	opacity: 0.7;
+	transition: 0.5s;
+}
+
+.login-box a {
+	text-decoration: none;
+	color: #666;
+}
+
+.login-box a:hover {
+	color: #aeaeae;
+}
+
+.login-box .selected {
+	color: #665851!important;
+	transition: 0.5s;
+}
+
