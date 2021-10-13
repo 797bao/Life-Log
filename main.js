@@ -6,6 +6,7 @@ app.listen(3000, () => console.log(`Express server listening on port 3000`));
 const homeRoute = require('./routes/home');
 const loginRoute = require('./routes/login');
 const registerRoute = require('./routes/register');
+const userRoute = require('./routes/user');
 
 const flash = require('connect-flash');
 app.use(flash());  //dynamic web texts instead of popups
@@ -41,7 +42,8 @@ app.use('', homeRoute);
 app.use('/login', loginRoute);
 //localhost:3000/register
 app.use('/register', registerRoute);
-
+//localhost:3000/user
+app.use('/user', userRoute);
 
 //this is the url username & password key
 const mongoose = require('mongoose');
