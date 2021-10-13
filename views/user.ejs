@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Life Log</title>
+</head>
+<body>
+  <!-- <br><br><img src = "/images/LeafLogo.png" width = 180%></src> -->
+  <h1> User Page </h1>
+      
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/xrange.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+  <figure class="highcharts-figure">
+      <div id="container"></div>
+      <script src = "js/logChart.js"></script> 
+      <script>
+        displayChart();
+      </script>
+      <p class="highcharts-description">
+          X-range charts are  to visualize a range on the X-axis.
+          This is often used in Gantt charts, as seen in this example.
+          The X-range data series forms the basis of Highcharts Gantt,
+          but is also available with Highcharts.
+      </p>
+  </figure>
+
+</body>
+
+
+<form action="/user/log" method="POST">
+  <input type="datetime-local" placeholder="Start Time" name="x" required><br>
+  <input type="datetime-local" placeholder="End Time" name="x2" required><br>
+  <input type="text" placeholder="Activity Name" name="activityName" required><br>
+  <input type="text" placeholder="Comments" name="comments" required><br>
+
+  <button type="submit">Log</button>
+</form>
+
+</html>
