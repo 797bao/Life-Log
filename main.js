@@ -6,7 +6,7 @@ app.listen(3000, () => console.log(`Express server listening on port 3000`));
 const homeRoute = require('./routes/home');
 const loginRoute = require('./routes/login');
 const registerRoute = require('./routes/register');
-const userRoute = require('./routes/user');
+const logRoute = require('./routes/log');
 
 const flash = require('connect-flash');
 app.use(flash());  //dynamic web texts instead of popups
@@ -43,10 +43,11 @@ app.use('/login', loginRoute);
 //localhost:3000/register
 app.use('/register', registerRoute);
 //localhost:3000/user
-app.use('/user', userRoute);
+app.use('/log', logRoute);
 
 //this is the url username & password key
 const mongoose = require('mongoose');
+const { $where } = require('./models/user');
 mongoose.connect(mongourl,{useNewUrlParser: true}, {useUnifiedTopology: true})
     .then(client =>{ console.log("Connection success"); })
     .catch(err => console.error('ERROR CRASHING', err));
