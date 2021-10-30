@@ -31,7 +31,7 @@ router.post('/login', (req, res) => {
           console.log('successfully logged in');
           req.session.user = user;
           req.session.save(function() {
-              return res.redirect('/user');
+              return res.redirect('/log');
           });
       }
   })
