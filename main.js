@@ -14,8 +14,8 @@ const flash = require('connect-flash');
 app.use(flash());  //dynamic web texts instead of popups
 
 //setting up the view engine & directory
-app.use(express.static('public'))
 app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/vendor'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -44,16 +44,23 @@ app.use('', homeRoute);
 app.use('/login', loginRoute);
 //localhost:3000/register
 app.use('/register', registerRoute);
-//localhost:3000/user
+//localhost:3000/log
 app.use('/log', logRoute);
 //localhost:3000/statistics
+// <<<<<<< yearlyView1.0
 app.use('/statistics', statisticsRoute);
-//localhost:3000/monthly
+//localhost:3000/yearly
 app.use('/yearly', yearlyRoute);
+=======
+app.use('/log', statisticsRoute);
+// //localhost:3000/logData
+// app.use('/logdata', logRoute);
+
+// >>>>>>> master
 
 //this is the url username & password key
 const mongoose = require('mongoose');
-const { $where } = require('./models/user');
+
 mongoose.connect(mongourl,{useNewUrlParser: true}, {useUnifiedTopology: true})
     .then(client =>{ console.log("Connection success"); })
     .catch(err => console.error('ERROR CRASHING', err));

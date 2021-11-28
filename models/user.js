@@ -1,4 +1,3 @@
-const { Color } = require('highcharts');
 const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
@@ -12,39 +11,16 @@ const userSchema = mongoose.Schema({
     }],
 
     userData: [{
-        x: { type: Date},
-        x2: { type: Date},
-        activityName: { type: String},
-        color : { type: String},
-        comments: { type: String},
-        y: {type: Number} 
+        userActivities: {         //mapping the name & color
+            activityName: { type: String},
+            color: { type:String}
+        },
+        x: { type: Date}, //starttime
+        x2: { type: Date}, //endtime
+        comments: {type: String},
+        y: {type: Number},  //required for highcharts only, other users can ignore this
     }]
 
-    // userData: [{
-    //     x: { type: Date},
-    //     x2: { type: Date},
-    //     activityName: { type: String},
-    //     color : { type: String},
-    //     comments: { type: String},
-    //     y: {type: Number} 
-    // }]
-
-    // userData: [{
-    //     x: { type: Date},
-    //     x2: { type: Date},
-    //     activityName: { type: String},
-    //     color : { type: String},
-    //     comments: { type: String},
-    //     y: {type: Number} 
-    // }]
-
-    // userData: {
-    //     x: [],
-    //     x2: [],
-    //     color: [],
-    //     activityName: [],
-    //     comments: [],
-    // }
-}, {timestamps:true})
+})
 
 module.exports = mongoose.model('User', userSchema);
