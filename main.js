@@ -47,11 +47,10 @@ app.use('/register', registerRoute);
 //localhost:3000/log
 app.use('/log', logRoute);
 //localhost:3000/statistics
-// <<<<<<< yearlyView1.0
 app.use('/statistics', statisticsRoute);
 //localhost:3000/yearly
 app.use('/yearly', yearlyRoute);
-=======
+
 app.use('/log', statisticsRoute);
 // //localhost:3000/logData
 // app.use('/logdata', logRoute);
