@@ -140,9 +140,6 @@ h3 {
 }
 
 #sidebar {
-	/* display: flex;
-    align-items: stretch;
-	 */
     min-width: 300px;
     max-width: 250px;
     background: var(--primary-color);

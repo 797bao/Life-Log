@@ -8,7 +8,10 @@ const loginRoute = require('./routes/login');
 const registerRoute = require('./routes/register');
 const logRoute = require('./routes/log');
 const statisticsRoute = require('./routes/statistics');
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7bf56ff048584048e9b027be8c964fbd7e052662
 
 const flash = require('connect-flash');
 app.use(flash());  //dynamic web texts instead of popups
@@ -47,10 +50,14 @@ app.use('/register', registerRoute);
 //localhost:3000/log
 app.use('/log', logRoute);
 //localhost:3000/statistics
+<<<<<<< HEAD
 app.use('/log', statisticsRoute);
 // //localhost:3000/logData
 // app.use('/logdata', logRoute);
 
+=======
+app.use('/statistics', statisticsRoute);
+>>>>>>> 7bf56ff048584048e9b027be8c964fbd7e052662
 
 //this is the url username & password key
 const mongoose = require('mongoose');
