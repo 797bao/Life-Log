@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
       y: 0
    };
    req.session.user.userData.push(newEntry);
-   // console.log(req.session.user.userData);
+
 });
 
 router.post('/log', (req, res) => {
