@@ -1,24 +1,39 @@
+:root {
+	--white-color:                  white;
+	--black-color:					#212121;
+	--primary-color:                #8e7cc3ff;
+	--dark-color:                   #351c75ff;
+}
+
 body {
-	background-color: #aeaeae;
+	background-color: #212121;
 	font-size: 16px;
 	font-family: 'Lato', sans-serif;
 	font-weight: 300;
 	margin: 0;
-	color: #666;
+	color: var(--black-color);
 }
 
 /* Typography */
 h1{
 	text-transform: uppercase;
-	color: black;
+	color: var(--white-color);
 	font-weight: 500;
 	letter-spacing: 2px;
-	font-size: 2.0em;
+	font-size: 3.0em;
 	line-height: 2.8em;
 }
 
 h2 {
-	color: white;
+	color: var(--white-color);
+	font-weight: 400;
+	letter-spacing: 1px;
+	font-size: 2.0em;
+	line-height: 2.8em;
+}
+
+h3 {
+	color: var(--white-color);
 	font-weight: 300;
 	letter-spacing: 1px;
 	font-size: 1.2em;
@@ -37,25 +52,22 @@ h2 {
 }
 
 .home h1{
-	border: #888;
-	background-color: white;
-	border-radius: 5px;
-	border-style: solid;
-	box-shadow: 0 5px 50px rgba(0,0,0,0.4);
+	font-size: 4.0em;
 }
 
 .home a {
+	font-size: 1.7em;
 	text-decoration: none;
-	color: #666;
+	color: var(--white-color);
 }
 
 .home a:hover {
-	color: white;
+	color: var(--primary-color);
 }
 
-/* ---------- Log In Page ---------- */
+/* ---------- Log In / Sign Up / Forgor Password Page ---------- */
 .login-box {
-	background-color: white;
+	background-color: var(--primary-color);
 	max-width: 340px;
 	margin: 0 auto;
 	position: absolute;
@@ -69,42 +81,26 @@ h2 {
   	transform: translate(-50%, -50%);
 }
 
-.login-box label {
-	font-weight: 700;
-	font-size: .8em;
-	color: #888;
-	letter-spacing: 1px;
-	text-transform: uppercase;
-	line-height: 2em;
-}
-
 .login-box input {
 	margin-bottom: 20px;
 	padding: 8px;
-	border: 1px solid #ccc;
+	border: 1px solid --white-color;
 	border-radius: 2px;
-	font-size: .9em;
-	color: #888;
-}
-
-.login-box input:focus {
-	outline: none;
-	border-color: #665851;
-	transition: 0.5s;
-	color: #665851;
+	font-size: 1.5em;
+	color: var(--primary-color);
 }
 
 .login-box button {
 	margin-top: 0px;
 	border: 0;
 	border-radius: 2px;
-	color: white;
+	color: var(--white-color);
 	padding: 10px;
 	text-transform: uppercase;
 	font-weight: 400;
-	font-size: 0.7em;
+	font-size: 1.0em;
 	letter-spacing: 1px;
-	background-color: #665851;
+	background-color: var(--dark-color);
 	cursor:pointer;
 	outline: none;
 }
@@ -121,15 +117,184 @@ h2 {
 
 .login-box a {
 	text-decoration: none;
-	color: #666;
+	font-size: 1.3em;
+	color: var(--white-color);
 }
 
 .login-box a:hover {
-	color: #aeaeae;
+	color: var(--black-color);
 }
 
 .login-box .selected {
-	color: #665851!important;
+	color: var(--black-color)!important;
 	transition: 0.5s;
 }
 
+/* ---------- Log / Statistics Page ---------- */
+
+/* ---------- Sidebar ------------- */
+.wrapper {
+    display: flex;
+    align-items: stretch;
+	background-color: var(--black-color);
+}
+
+#sidebar {
+	/* display: flex;
+    align-items: stretch;
+	 */
+    min-width: 300px;
+    max-width: 250px;
+    background: var(--primary-color);
+    color: var(--white-color);
+    transform-origin: bottom left;
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: var(--dark-color);
+	color: var(--white-color);
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+}
+
+#sidebar ul li a {
+    padding: 10px;
+	color: var(--white-color);
+    display: block;
+}
+#sidebar ul li a:hover {
+    color: var(--primary-color);
+    background: var(--white-color);
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+a[aria-expanded="false"]::before, a[aria-expanded="true"]::before {
+    content: '\e259';
+    display: block;
+    position: absolute;
+	margin: auto;
+	font-family: 'Glyphicons Halflings';
+    right: 20px;
+    font-size: 1.6em;
+	color: var(--black-color);
+}
+a[aria-expanded="true"]::before {
+    content: '\e260';
+}
+
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: var(--primary-color);
+}
+
+a.article, a.article:hover {
+    background: var(--white-color) !important;
+    color: var(--primary-color) !important;
+}
+
+
+/* ---------- Content ------------- */
+#content {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-right: 15%;
+	padding-left: 15%;
+
+    min-height: 100vh;
+	background-color: var(--black-color);
+	position: relative;
+}
+
+#Left {
+	position: absolute;
+	top: 930px;
+	left: 45%;
+	float: left;
+	width: 20px;
+	height: 20px;
+	z-index: 5;
+}
+
+#Right {
+	position: absolute;
+	top: 930px;
+	left: 59.8%;
+	float: right;
+	width: 20px;
+	height: 20px;
+	z-index: 5;
+}
+
+#div3 {
+	position: absolute;
+	top: 10px;
+	right: 10%;
+	float: right;
+	width: 300px;
+	height: 300px;
+
+}
+
+#div4 {
+	position: absolute;
+	top: 500px;
+	right: 20%;
+	float: right;
+	width: 20px;
+	height: 20px;
+	z-index: 5;
+}
+
+#dropdown  {
+	border-width: 1px;
+	border-color: white;
+    outline: 2;
+    overflow: hidden;
+    height: 30px;
+	width:200px;
+	background-color: var(--black-color);
+	color: white;
+    padding-left: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+#button {
+	border-width: 1px;
+	border-color: var(--dark-color);
+	background-color:var(--primary-color);
+	/* border-color: --primary-color;
+		/* border-color: rgb(37, 18, 85); */
+	/* background-color:var(--dark-color); */ 
+
+	font-weight:normal;
+	margin-top: 5px;
+	width: 100px;
+	height:60px;
+	color: white;
+
+	/* padding: 5px; */
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+#TotalHours{
+	width: 100%;
+	position: absolute;
+	text-align:center;
+	top: 130px;
+	color: white;
+	font-weight:bold;
+	font-size: 30px;
+	float:right;
+	z-index: 5;
+}
