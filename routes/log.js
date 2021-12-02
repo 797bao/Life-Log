@@ -59,6 +59,7 @@ router.post('/logActivity', (req, res) => {
         });
     }
     else {
+   
         newUserData.push(newEntry);
         User.findByIdAndUpdate({ _id: req.session.user._id }, { userData: newUserData }, { useFindAndModify: true }, function (err, res) {
             if (err)

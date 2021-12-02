@@ -59,6 +59,7 @@ app.use('/weekly', weeklyRoute);
 //localhost:3000/weekly
 app.use('/goals', goalsRoute);
 
+// >>>>>>> master
 
 //this is the url username & password key
 const mongoose = require('mongoose');
