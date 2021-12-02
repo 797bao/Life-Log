@@ -5,8 +5,11 @@ const User = require('../models/user')
 
 
 router.get('/', (req, res) => {
-   console.log("Loading Statistics page");
-   res.render('statistics.ejs');
+    console.log("Loading Monthly page");
+    res.render('goals.ejs');
 });
 
 module.exports = router;
+
+
+

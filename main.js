@@ -7,7 +7,11 @@ const homeRoute = require('./routes/home');
 const loginRoute = require('./routes/login');
 const registerRoute = require('./routes/register');
 const logRoute = require('./routes/log');
-const statisticsRoute = require('./routes/statistics');
+
+const yearlyRoute = require('./routes/yearly');
+const monthlyRoute = require('./routes/monthly');
+const weeklyRoute = require('./routes/weekly');
+const goalsRoute = require('./routes/goals');
 
 const flash = require('connect-flash');
 app.use(flash());  //dynamic web texts instead of popups
@@ -45,10 +49,15 @@ app.use('/login', loginRoute);
 app.use('/register', registerRoute);
 //localhost:3000/log
 app.use('/log', logRoute);
-//localhost:3000/statistics
-app.use('/log', statisticsRoute);
-// //localhost:3000/logData
-// app.use('/logdata', logRoute);
+
+//localhost:3000/yearly
+app.use('/yearly', yearlyRoute);
+//localhost:3000/monthly
+app.use('/monthly', monthlyRoute);
+//localhost:3000/weekly
+app.use('/weekly', weeklyRoute);
+//localhost:3000/weekly
+app.use('/goals', goalsRoute);
 
 
 //this is the url username & password key

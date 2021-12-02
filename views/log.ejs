@@ -5,8 +5,6 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <meta charset="UTF-8">
   <title>Life Log</title>
-  <link href="/css/style.css" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 
 <body style="background-color:#20201F">
@@ -16,7 +14,6 @@
   <script src="https://code.highcharts.com/modules/xrange.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/modules/draggable-points.js"></script>
-  <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/modules/draggable-points.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
@@ -55,6 +52,7 @@
             </h2>
           </a>
           <ul class="collapse list-unstyled" id="statSubmenu">
+            <li><a href="yearly"><h3>Yearly Summary</h3></a></li>
             <li><a href="monthly"><h3>Monthly Summary</h3></a></li>
             <li><a href="weekly"><h3>Weekly Summary</h3></a></li>
             <li><a href="goals"><h3>Goals</h3></a></li>
@@ -79,6 +77,8 @@
         <script src="logChart.js"></script>
         <script>
           var userSessionData = <%-JSON.stringify(userData) %>;
+          var userDate = <%-JSON.stringify(today) %>;
+          setUserDate(userDate);
           displayLogChart(userSessionData);
         </script>
       </figure>
@@ -90,14 +90,10 @@
       <script>
         var userSessionData = <%-JSON.stringify(userData) %>;
         var activities = <%-JSON.stringify(userActivities) %>;
-        displayPieChart(userSessionData, activities)
+        displayPieChart(userSessionData, activities);
       </script>
 
     </div>
-
-
-
-    
     <div id = "div4">
       <form action="/log/createActivity" method="POST">
         <input type="color" placeholder="Color" name="color" required><br>
@@ -112,8 +108,8 @@
             <option><%= userActivities[i].activityName %></option>  
           <% }; %>
         </select> <br>
-        <input id = 'dropdown' type="datetime-local" placeholder="Start Time" name="x" required><br>
-        <input id = 'dropdown' type="datetime-local" placeholder="End Time" name="x2" required><br>
+        <input id = 'dropdown' type="time" placeholder="Start Time" name="x" required><br>
+        <input id = 'dropdown' type="time" placeholder="End Time" name="x2" required><br>
         <input id = 'dropdown' type="text" placeholder="Comments" name="comments" required><br>
         <button id = 'button' type="submit">Log <br> Activity</button>
       </form>

@@ -1,9 +1,9 @@
-var currentDatePage = new Date();
-currentDatePage.setHours(0, 0, 0, 0);
 var dateMonthString = new Array(12);
 var dayTypeString = new Array(7);
-var user;
+var user_data;
+var user_date;
 var user_activities;
+var tooltipEnable = true;
 
 dateMonthString[0] = 'Jan';
 dateMonthString[1] = 'Feb';
@@ -30,28 +30,87 @@ $(document).ready(function () {
    $('#Left').on('click', function () {
       $('#container1').fadeTo(70, 0.75);
       $('#container1').fadeTo(70, 1);
-      currentDatePage.setDate(currentDatePage.getDate() - 1);
-      // console.log(currentDatePage);
-      displayLogChart(user);
-      displayPieChart(user, user_activities);
+ 
+      user_date.setDate(user_date.getDate() - 1);
+      updateDate(user_date);
+
+      displayLogChart(user_data);
+      displayPieChart(user_data, user_activities);
    })
    $('#Right').on('click', function () {
       $('#container1').fadeTo(70, 0.75);
       $('#container1').fadeTo(70, 1);
-      currentDatePage.setDate(currentDatePage.getDate() + 1);
-      // console.log(currentDatePage);
-      displayLogChart(user, user_activities);
-      displayPieChart(user, user_activities);
+
+      user_date.setDate(user_date.getDate() + 1);
+      updateDate(user_date);
+
+      displayLogChart(user_data);
+      displayPieChart(user_data, user_activities);
    })
 });
 
-function updateDatabase(draggedData) {
+function updateDatabase(draggedData, updatedEntry) {
+
+   console.log("UPDATING DATABASE---------------");
+
+   console.log("DRAGGED DATA ", draggedData);
+   console.log("new ENTRY ", updatedEntry);
+   // return;
+
+   //the dragged data was the only entry
+   if (draggedData === undefined) {
+      // console.log("new user data undefined");
+      // console.log("new entry ", updatedEntry);
+      //must be in double (()) for some reason to register??
+      if ((updatedEntry == undefined)) {  //the user removed the dragged element
+         user_data = user_data.splice(0, user_data.length);
+         // console.log("new entry does not exist, remove eveything ", user_data);
+      }
+      else { //the user has removed the dragged element by dragging it past midnight
+         user_data.splice(0, user_data.length); //remove all of the user's data
+         user_data.push(updatedEntry); //push the new entry
+         // console.log("new entry is not null, it exists push it ", user_data);
+      }
+   }
+   else {
+      //must be in double (()) for some reason to register??
+      if ((updatedEntry === undefined)) { //the user removed the dragged element
+         user_data = draggedData; //user's data is the data with dragged element removed
+         // console.log("user's data is the data with dragged element removed ", user_data);
+      }
+      else {
+         // console.log("new user Data ", draggedData);
+         // console.log("new entry ", updatedEntry);
+         user_data = placeNewEntryInOrder(draggedData, updatedEntry);
+         // console.log("placing new entry in order ,", user_data);
+      }
+   }
+   // console.log('user data after ' ,user_data);
+   displayLogChart(user_data);
+
+
    $.ajax({
-      url: '/log/Update',
+      url: '/log/UpdateEntries',
       type: 'post',
-      data: JSON.stringify(draggedData),
+      // data: {
+      //    draggedData,
+      //    updatedEntry
+      // },
+      data: JSON.stringify(user_data),
       contentType: "application/json",
       dataType: 'json'
+   });
+}
+
+function updateDate(newDate) {
+   // console.log("UPDATING NEW DATE ", newDate);
+   $.ajax({
+      url: '/log/UpdateDate',
+      type: 'post',
+      // data: user_date
+      data: {newDate}
+      // contentType: "application/json",
+      // dataType: 'json'
    });
 }
 
@@ -77,7 +136,7 @@ function timestamp(millis) {
    if (hours == 0)
       hours = 12;
 
-   var mins = (millis % 3600000) / (60 * 1000);
+   var mins = Math.trunc((millis % 3600000) / (60 * 1000));
    if (mins < 10)
       return hours + ':0' + mins + meridiem;
    return hours + ':' + mins + meridiem;
@@ -86,7 +145,7 @@ function timestamp(millis) {
 //passes in the user's data to be converted to UTC time so it can be displayed properly
 function getConvertedData(userSessionData)
 {
-   console.log("CONVERTING DATA");
+   // console.log("CONVERTING DATA");
    if (userSessionData.length > 0) {
       return convertedData(userSessionData);  
       // console.log("test,  " , dataDisplayed);
@@ -111,46 +170,56 @@ function getConvertedData(userSessionData)
    } 
 }
 
-
-
 //DateTime in our database is local time
 //Highcharts can only display time in UTC timestamp as milliseconds
 //we must offset local timezone to UTC and then convert that time into milliseconds
 function convertedData(userSessionData) {
    var userData = [];
    var offset = new Date().getTimezoneOffset() * 60 * 1000;
-   var z = 0;
+   var index = 0;
 
    userSessionData.forEach(element => {
       userData.push({
          activityName: element.userActivities.activityName,
+         // x: element.x - offset,
+         // x2: element.x2 - offset,
          x: Date.parse(element.x) - offset,
          x2: Date.parse(element.x2) - offset,
          comments: element.comments,//userSessionData.comments[0],
          color: element.userActivities.color,//userSessionData.color[0],
          y: 0,
+         //holds a reference to the original data as we'll arrange the displayed data's array order to render on top
+         originalIndex: index++ 
       })
    });
    return userData;
 }
 
+//called from log.ejs, sets the session date so refreshing still persists the logChart for the date we're on
+function setUserDate(userDate) {
+   console.log("USER DATE BEING SET");
+
+   user_date = new Date(userDate);
+   user_date.setHours(0,0,0,0);
+   console.log("What is the user date? ", user_date);
+}
 
 function displayLogChart(userSessionData) {
+   user_data = userSessionData;
+   console.log("reassigning session data ", user_data);
+   let dataDisplayed = getConvertedData(user_data);
 
-
-   user = userSessionData;
-   var dataBeforeDrag;
-
-
-   let dataDisplayed = getConvertedData(userSessionData);
+   console.log("redisplaying?");
+   var dragging = false;
    
-   var nextDatePage = new Date(currentDatePage);
-   nextDatePage.setDate(currentDatePage.getDate() + 1);
-
+   var nextDatePage = new Date(user_date);
+   console.log("USER DATE ?" , user_date);
+   nextDatePage.setDate(user_date.getDate() + 1);
 
    var logChart = Highcharts.chart('container1', {
       overflow: true,
       tooltip: {
+         enabled: tooltipEnable,
          useHTML: true,
          hideDelay: 100,
          positioner: function (labelWidth, labelHeight, point) {
@@ -169,10 +238,11 @@ function displayLogChart(userSessionData) {
       },
       plotOptions: {
          series: {
+            stickyTracking: false,
             borderWidth: 0,
             stickyTracking: false,
             dragDrop: {
-               dragMinX: Date.UTC(currentDatePage.getFullYear(), currentDatePage.getMonth(), currentDatePage.getDate()),
+               dragMinX: Date.UTC(user_date.getFullYear(), user_date.getMonth(), user_date.getDate()),
                dragMaxX: Date.UTC(nextDatePage.getFullYear(), nextDatePage.getMonth(), nextDatePage.getDate()),
                draggableX: true,
                dragPrecisionX: 60 * 1000 //milliseconds to minutes
@@ -185,16 +255,34 @@ function displayLogChart(userSessionData) {
             animation: false,
             point: {
                events: {
+                  mouseOver: function(e) {
+                     mouseOverData = true;
+                     //when hovering over a bar, only the last index will be rendered on top
+                     //we must rearrange the array so that bar's index is last to be rendered on top of the bars
+                     if (!dragging && this.index != dataDisplayed.length - 1) {
+                        let rightSplice = dataDisplayed.splice(this.index + 1, dataDisplayed.length - 1);
+                        let leftSplice = dataDisplayed.splice(0, this.index);
+
+                        dataDisplayed = (leftSplice).concat(rightSplice).concat(dataDisplayed);
+                        //removing all data & adding new data in will cause chart to cause mouseExit when it did not actually exit
+                        mouseOverData = false; 
+                        //does not modify any values, just rearranges the array's order so the mouseOvered data is displayed on top if the user were to drag
+                        //this does not modify the user_data array which is the ordered array that we need to find out where to place the new entry & determine collisions
+                        logChart.series[0].setData([]);
+                        //Mouseout event will be fired right here as we removed the data we were originally hovering over ^
+                        logChart.series[0].setData(dataDisplayed);          
+                     }
+                  },
                   dragStart: function (e) {
-                     dataBeforeDrag = this;
+                     dragging = true;
                   },
                   drop: function (e) {
-                     // console.log("DROPPED?");
+                     dragging = false;
                      if (this.x == this.x2) //user removed the data
                      {
-                        userSessionData.splice(dataBeforeDrag.index, 1);
-                        console.log("REMOVING");
-                        updateDatabase(userSessionData);
+                        user_data.splice(this.originalIndex, 1);
+                        let updatedEntry;
+                        updateDatabase(user_data, updatedEntry);
                      }
                      else {
                         //converting back into the schema format 
@@ -204,15 +292,20 @@ function displayLogChart(userSessionData) {
                         };
                         let updatedEntry = {
                            //convert back to UTC time format, 8 hours ahead in form of milliseconds
-                           x: new Date((this.x + 8 * 3600 * 1000)),
-                           x2: new Date((this.x2 + 8 * 3600 * 1000)),
+                           x: new Date((this.x + 8 * 3600 * 1000)).toISOString(), //mongoose stores dates as iso string in database, convert to compare them
+                           x2: new Date((this.x2 + 8 * 3600 * 1000)).toISOString(), //mongoose stores dates string in database, convert to compare them
                            userActivities: updatedActivity,
                            comments: this.comments,
                            y: 0
                         };
-                        userSessionData.splice(dataBeforeDrag.index, 1, updatedEntry);
-                        console.log("UPDATING: implementation");
-                        updateDatabase(userSessionData);
+                        // console.log("BEFORE SPLICE " , user_data);
+                        // console.log("THIS INDEX " , this.originalIndex);
+                        user_data.splice(this.originalIndex, 1);
+
+                        // console.log("AFTER SPLICE " , user_data);
+                        // console.log("UPDATING: implementation");
+                        updateDatabase(user_data, updatedEntry);
+                        displayPieChart(user_data,user_activities); //this is wrong <<<--- fix it
                      }
                   }
                }
@@ -225,11 +318,6 @@ function displayLogChart(userSessionData) {
          width: 450,
          height: 965,
          inverted: true,
-         events: {
-            redraw () {
-              console.log('Redraw event!')
-           }
-         }
       },
       title: {
          showInLegend: false,
@@ -254,7 +342,7 @@ function displayLogChart(userSessionData) {
          lineColor: '#949494',
          type: 'datetime',
          tickColor: '#949494',
-         min: Date.UTC(currentDatePage.getFullYear(), currentDatePage.getMonth(), currentDatePage.getDate()),
+         min: Date.UTC(user_date.getFullYear(), user_date.getMonth(), user_date.getDate()),
          max: Date.UTC(nextDatePage.getFullYear(), nextDatePage.getMonth(), nextDatePage.getDate()),
       },
       yAxis: {
@@ -268,7 +356,7 @@ function displayLogChart(userSessionData) {
             text: ''
          },
          lineColor: '#949494',
-         categories: [dateString(currentDatePage)],
+         categories: [dateString(user_date)],
          reversed: true
       },
       series: [{
@@ -278,23 +366,18 @@ function displayLogChart(userSessionData) {
          data: dataDisplayed,
       }]
    });
-
-   console.log("data on refresh ", dataDisplayed);
-   // console.log('hi');
-   // console.log(logChart);
-   // setTimeout(() => Highcharts.fireEvent(logChart, 'redraw'));
 }
 
 function displayPieChart(userSessionData, activities) {
+   console.log("displaying pie chart");
    user_activities = activities;
-   let todaysHours = getTodaysHours(userSessionData, activities);
+   let todaysHours = getTodaysHours(user_data, activities);
    let totalHours = 0;
    // console.log("TODAY HOURS ", todaysHours[0].y);
    for (var i = 0; i < todaysHours.length; i++) 
       totalHours += todaysHours[i].y;
 
-   console.log("total hours ", totalHours);
-   console.log("duration: ", duration(totalHours));
+   // console.log("total hours ", totalHours);
    document.getElementById('TotalHours').innerHTML = duration(totalHours);
 
    Highcharts.chart('container2', {
@@ -340,30 +423,15 @@ function displayPieChart(userSessionData, activities) {
             },
             dataLabels: {
                enabled: false,
-            }
-            
+            },
+            animation: false,
          },
+
       },
       series: [{
          innerSize: '70%',
          colorByPoint: true,
          data: todaysHours
-         // data: [{
-         //    name: 'Chrome',
-         //    y: 5
-         // }, {
-         //    name: 'Internet Explorer',
-         //    y: 2
-         // }, {
-         //    name: 'Firefox',
-         //    y: 15
-         // }, {
-         //    name: 'Edge',
-         //    y: 3
-         // }, {
-         //    name: 'Safari',
-         //    y: 2
-         // }]
       }]
    });
 
@@ -371,7 +439,7 @@ function displayPieChart(userSessionData, activities) {
 
 //modified BST
 //returns index with starting time that is = OR > but closest to the inputted value
-function getIndex(array, search) {
+function getTodayIndex(array, search) {
    let start = 0, end = array.length - 1, mid;
 
    while (start <= end) // <= end
@@ -395,16 +463,15 @@ function getIndex(array, search) {
 //returns an array (dictionary/map) with today's activities & its hours
 function getTodaysHours(userSessionData, userActivities) {
    if (userSessionData.length == 0) //never logged any entry at all
-      return;
+      return [];
 
-   var today = currentDatePage;
+   var today = user_date;
    // today.setHours(0, 0, 0, 0); //the new day just started, stroke of midnight
    var tomorrow = new Date(today);
    tomorrow.setDate(today.getDate() + 1);
    tomorrow = Date.parse(tomorrow); //date can only be read once parsed
-
    var todayData = []; //the array containing all data that lies within today
-   var startingIndex = getIndex(userSessionData, Date.parse(today));
+   var startingIndex = getTodayIndex(userSessionData, Date.parse(today));
 
    while (startingIndex < userSessionData.length) {
       let indexDate = Date.parse(userSessionData[startingIndex].x)
@@ -443,6 +510,7 @@ function getTodaysHours(userSessionData, userActivities) {
    for(var key in convertedDict) {
       pieChartData.push( {name: key, y: convertedDict[key].y, color: convertedDict[key].color});
    }
+   console.log("pie chart data " , pieChartData);
    return pieChartData;
 
 }
@@ -452,4 +520,142 @@ function dateString(date) {
    temp += dateMonthString[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + '<br> ' + dayTypeString[date.getDay()];
    // console.log("date string " + temp);
    return temp;
+}
+
+//same as log.js functions, placed here since dragging points calls update ajax calls which do not refresh the page
+//because of that the session data isn't passed back from log.js meaning we should also compute the session data here
+function placeNewEntryInOrder(arr, newEntry) {
+
+   //check the index to the left the entry's start time and return the splices if there are collisions
+   let collisionCount = 0;
+   let leftSplices = [], rightSplices = [];
+
+   let startingIndex = getIndex(arr, newEntry.x);
+   let spliceStart = startingIndex;
+   let leftCollision = getCollisions(arr, startingIndex, newEntry)
+
+   // console.log('starting index ,' , startingIndex);
+   // console.log('leftCollision  ,' , leftCollision);
+   // return;
+   if (leftCollision.length != 0) { //left side has a collision
+       leftSplices = spliceCollisions(arr, startingIndex, leftCollision)
+       collisionCount++;
+   }
+   else if (newEntry.x >= arr[startingIndex].x2) //no collision, check whether it needs to be spliced ahead or not
+       spliceStart++;
+
+   //check the index to the right of entry's end time and return the splices if there are collision
+   let endingIndex = getIndex(arr, newEntry.x2);
+   if (startingIndex != endingIndex) { //do not compute if left & right index are the same or else we get dupes
+       let rightCollision = getCollisions(arr, endingIndex, newEntry)
+       if (rightCollision.length != 0) {
+           rightSplices = spliceCollisions(arr, endingIndex, rightCollision)
+           collisionCount++;
+       }
+   }
+   else if (leftCollision.length == 2) //left & right is same index, check if left splice carries 2 entries
+       rightSplices = leftSplices.splice(1, 1); //pass the right half of the left splice to the right splice
+
+   if (endingIndex - startingIndex > 1) //check overlapping collisions in BETWEEN, update collision count for each 
+       collisionCount += endingIndex - startingIndex - 1;
+
+   //we must order the new entry, left & right splices
+   //only 2 combinations, new entry is behind left splice or in front of it, can never be in front of right splice
+   //due to nature of it being ordered & our BST getIndex
+   let newEntryAndSplices = [];
+   if (newEntry.x <= arr[startingIndex].x) //if the new entry is behind the left most splice
+       newEntryAndSplices = newEntryAndSplices.concat(newEntry).concat(leftSplices).concat(rightSplices);
+   else
+       newEntryAndSplices = newEntryAndSplices.concat(leftSplices).concat(newEntry).concat(rightSplices);
+
+   arr.splice(spliceStart, collisionCount); //remove all the indexes with collisions
+   let newUserData = arr.slice(0, spliceStart).concat(newEntryAndSplices).concat(arr.slice(spliceStart)); //add back in the new entry & splices
+   return newUserData;
+}
+
+
+//modified BST
+//returns index with starting time that is = OR < but closest to the inputted value
+function getIndex(array, search)
+{
+   let start = 0, end = array.length - 1, mid;
+   while (start <= end) // <= end
+   {
+       mid = Math.floor ((start + end)/2);
+       if (array[mid].x > search)
+           end = mid - 1;
+       else if (array[mid].x < search)
+           start = mid + 1;
+       else {
+         console.log("BROKE BECASE NOT COMPARABLE");
+         break;
+       }
+ 
+   }
+   //ensures that the index is closest & less than to searched one, since regular BST only checks if the value exists
+   if (mid != 0 && array[mid].x > search)
+       mid--;
+
+   return mid;
+}
+
+
+//does not modify the original array
+//checks array at specified index and splices it if there are any collisions
+//returns the splices of the collisions as new entries
+//2 new entries if the collision is between the index
+//0 new entries if the collision completely overlaps the index on left & right side
+//1 new entry if only 1 side overlaps
+function spliceCollisions(arr, index, collisions) {
+   let splices = []
+   if (arr[index].x < collisions[0]) {
+      let leftSplice = {
+         userActivities: arr[index].userActivities,
+         x: arr[index].x,
+         x2: collisions[0],
+         comments: arr[index].comments,
+         y: 0
+      };
+      splices = splices.concat(leftSplice);
+   }
+   if (arr[index].x2 > collisions[1]) {
+      let rightSplice = { 
+         userActivities: arr[index].userActivities,
+         x: collisions[1],
+         x2: arr[index].x2,
+         comments: arr[index].comments,
+         y: 0
+      }
+      splices = splices.concat(rightSplice);
+   }
+   return splices;
+}
+
+//does the new entry have a collision with the array at the inputted index?
+//returns an array of 2 numbers at the 2 points of collision or an empty array if no collision
+function getCollisions(arr, index, newEntry) {
+    let collisions = [];
+    if (newEntry.x < arr[index].x) { // start before they start
+        if (newEntry.x2 > arr[index].x) {//end after starting point
+            if (newEntry.x2 >= arr[index].x2) {//end at or past their ending point
+                collisions.push(arr[index].x);
+                collisions.push(arr[index].x2);
+            }
+            else {
+                collisions.push(arr[index].x);
+                collisions.push(newEntry.x2);
+            }
+        }
+    }
+    else if (newEntry.x < arr[index].x2) //start after they start & before they end
+    {
+      //   console.log("START AFTER ");
+        collisions.push(newEntry.x);
+        if (newEntry.x2 < arr[index].x2) //ended before they ended
+            collisions.push(newEntry.x2);
+        else
+            collisions.push(arr[index].x2);
+    }
+
+    return collisions;
 }

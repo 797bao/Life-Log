@@ -30,6 +30,10 @@ router.post('/login', (req, res) => {
           //store the user in the session redirect to tables
           console.log('successfully logged in');
           req.session.user = user;
+          req.session.user.today = new Date();
+          req.session.user.month = new Date();
+          req.session.user.year = new Date();
+          req.session.user.week = new Date();
           req.session.save(function() {
               return res.redirect('/log');
           });

@@ -4,6 +4,10 @@ const userSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     username: { type: String, required: true},
     password: { type: String, required: true},
+    today: Date, //holds the session data of of day to store & modify it when user flips through pages
+    month: Date, //holds the session data of of month to store & modify it when user flips through pages
+    year: Date, //holds the session data of of year to store & modify it when user flips through pages
+    week: Date, //holds the session data of of week to store & modify it when user flips through pages
 
     userActivities: [{
         activityName: { type: String},

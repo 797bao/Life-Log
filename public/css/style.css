@@ -295,3 +295,30 @@ a.article, a.article:hover {
 	float:right;
 	z-index: 5;
 }
+
+#monthlyChart-container
+{
+	padding: 3%;
+	width: 1600px;
+	height: 1010px;
+}
+
+#LeftMonth {
+	position: absolute;
+	top: 825px;
+	left: 55.5%;
+	float: left;
+	width: 35px;
+	height: 35px;
+	z-index: 5;
+}
+
+#RightMonth {
+	position: absolute;
+	top: 825px;
+	left: 58.5%;
+	float: right;
+	width: 35px;
+	height: 35px;
+	z-index: 5;
+}
