@@ -5,34 +5,81 @@
     <meta charset="UTF-8">
     <title>Life Log</title>
     <link href="/css/style.css" rel="stylesheet" type="text/css">
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"
         integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="yearlyChart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+    </style>
 </head>
 
 <body>
-    <div class="chartMenu">
-        <h1 style="text-align:center;">Yearly Overiew</h1>
-    </div>
-
-
-
-    <div class="container">
-        <canvas id="yearlyChart"></canvas>
-
-
-
-    </div>
-
-    <script>
-        var userSessionData = <%-JSON.stringify(userData)-%>;
-        var userActivity = <%-JSON.stringify(userActivities)-%>;
-        displayYearlyChart(userSessionData, userActivity);
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+                $(this).toggleClass('active');
+            });
+        });
     </script>
+    
+    <div class="wrapper">
+        <!-- Sidebar Holder -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h1>Life Log</h1>
+            </div>
+            <ul class="components">
+                <li>
+                    <a href="log">
+                        <h2>
+                            Log
+                        </h2>
+                    </a>
+                </li>
+                <li>
+                    <a href="#statSubmenu" data-toggle="collapse" aria-expanded="false">
+                        <h2>
+                            Statistics
+                        </h2>
+                    </a>
+                    <ul class="collapse list-unstyled" id="statSubmenu">
+                        <li><a href="yearly" style="background-color: #351c75ff;">
+                                <h3>Yearly Summary</h3>
+                            </a></li>
+                        <li><a href="monthly">
+                                <h3>Monthly Summary</h3>
+                            </a></li>
+                        <li><a href="weekly">
+                                <h3>Weekly Summary</h3>
+                            </a></li>
+                        <li><a href="goals">
+                                <h3>Goals</h3>
+                            </a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- <div class="chartMenu">
+            <h1 style="text-align:center;">Yearly Overiew</h1>
+        </div> -->
+        
+        <div id="yearlyChart-container">
+            <canvas id="yearlyChart"></canvas>
+        </div>
+
+        <script>
+            var userSessionData = <%-JSON.stringify(userData)-%>;
+            var userActivity = <%-JSON.stringify(userActivities)-%>;
+            displayYearlyChart(userSessionData, userActivity);
+            
+        </script>
+    </div>
 </body>
 
 </html>
