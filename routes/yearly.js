@@ -5,8 +5,8 @@ const User = require('../models/user')
 
 
 router.get('/', (req, res) => {
-    console.log("Loading Monthly page");
-    res.render('yearly.ejs');
+    console.log("Loading Yearly page");
+    res.render('yearly.ejs', { userData: req.session.user.userData, userActivities: req.session.user.userActivities });
 });
 
 module.exports = router;
