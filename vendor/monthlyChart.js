@@ -195,16 +195,21 @@ function displayMonthlyChart(userSessionData, userActivities, month) {
             plugins: {
                 legend: {
                     display: true,
-                    position: 'bottom',
+                    position: 'right',
                     title: { //to push down the legend
                         display: true,
+                        text: 'ACTIVITIES',
+                        color: '#FFF',
                         font: {
-                            size: 55
+                            family: 'Poppins',
+                            size: 20,
+                            weight: 500
                         }
                     },
                     labels: {
                         color: '#FFF',
                         font: {
+                            family: 'Poppins',
                             size: 14
                         }
                     }
@@ -214,7 +219,9 @@ function displayMonthlyChart(userSessionData, userActivities, month) {
                     text: getMonthText(),
                     color: '#FFF',
                     font: {
-                        size: 55
+                        family: 'Poppins',
+                        size: 40,
+                        weight: 500
                     }
                 }
             },
@@ -223,8 +230,21 @@ function displayMonthlyChart(userSessionData, userActivities, month) {
                     grid: {
                         display: false
                     },
+                    title: {
+                        display: true,
+                        text: 'Date',
+                        color: '#FFFFFF',
+                        font: {
+                            family: 'Poppins',
+                            size: 20,
+                            weight: 500
+                        }
+                    },
                     ticks: {
                         color: '#FFFFFF',
+                        font: {
+                            family: 'Poppins'
+                        }
                     },
                     stacked: true
                 },
@@ -240,11 +260,16 @@ function displayMonthlyChart(userSessionData, userActivities, month) {
                         text: 'Hours',
                         color: '#FFFFFF',
                         font: {
-                            size: 16
+                            family: 'Poppins',
+                            size: 20,
+                            weight: 500
                         }
                     },
                     ticks: {
-                        color: '#FFFFFF'
+                        color: '#FFFFFF',
+                        font: {
+                            family: 'Poppins'
+                        }
                     },
                     stacked: true
                 }

@@ -12,18 +12,18 @@ year[2] = "2022";
 year[3] = "2023";
 
 let month = new Array(12);
-month[0] = "January";
-month[1] = "February";
+month[0] = "Jan";
+month[1] = "Feb";
 month[2] = "March";
 month[3] = "April";
 month[4] = "May";
 month[5] = "June";
 month[6] = "July";
-month[7] = "August";
-month[8] = "September";
-month[9] = "October";
-month[10] = "November";
-month[11] = "December";
+month[7] = "Aug";
+month[8] = "Sept";
+month[9] = "Oct";
+month[10] = "Nov";
+month[11] = "Dec";
 
 Date.prototype.getDayOfYear = function () {
     return this.getDate() - 1;
@@ -151,6 +151,7 @@ function displayYearlyChart(userSessionData, userActivities, year) {
     user_activities = userActivities;
     setYear(year);
 
+    let today = new Date();
     let dataSets = initializeDatSets(userActivities);
     if (userSessionData.length > 0)
         dataSets = populateActivityData(dataSets, userActivities, userSessionData);
@@ -173,17 +174,29 @@ function displayYearlyChart(userSessionData, userActivities, year) {
                         display: true,
                         text: 'ACTIVITIES',
                         color: '#FFF',
-                        size: 18
+                        font: {
+                            family: 'Poppins',
+                            size: 20,
+                            weight: 500
+                        }
                     },
                     labels: {
-                        color: '#FFF'
+                        color: '#FFF',
+                        font: {
+                            family: 'Poppins',
+                            size: 14,
+                        }
                     }
                 },
                 title: {
                     display: true,
-                    // text: 'Overview of Activities: ' + today.getFullYear(),
+                    text: 'Overview of Activities: ' + today.getFullYear(),
                     color: '#FFF',
-                    fontSize: 20
+                    font: {
+                        family: 'Poppins',
+                        size: 40,
+                        weight: 500
+                    }
                 }
             },
             scales: {
@@ -192,11 +205,18 @@ function displayYearlyChart(userSessionData, userActivities, year) {
                         display: true,
                         text: 'Month',
                         color: '#FFF',
-                        // fontSize: 20
+                        font: {
+                            family: 'Poppins',
+                            size: 14,
+                            weight: 500
+                        }
                     },
                     ticks: {
                         color: '#FFF',
-
+                        font: {
+                            family: 'Poppins',
+                            size: 14,
+                        }
                     },
                     stacked: true
                 },
@@ -206,10 +226,18 @@ function displayYearlyChart(userSessionData, userActivities, year) {
                         display: true,
                         text: 'Hours Spent on Activity',
                         color: '#FFF',
-
+                        font: {
+                            family: 'Poppins',
+                            size: 14,
+                            weight: 500
+                        }
                     },
                     ticks: {
-                        color: '#FFF'
+                        color: '#FFF', 
+                        font: {
+                            family: 'Poppins',
+                            size: 14,
+                        }
                     },
                     stacked: true
                 }
