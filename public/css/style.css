@@ -8,7 +8,7 @@
 body {
 	background-color: #212121;
 	font-size: 16px;
-	font-family: 'Poppins', sans-serif;
+	font-family: 'Lato', sans-serif;
 	font-weight: 300;
 	margin: 0;
 	color: var(--black-color);
@@ -296,7 +296,7 @@ a.article, a.article:hover {
 	z-index: 5;
 }
 
-#monthlyChart-container, #yearlyChart-container
+#monthlyChart-container
 {
 	padding: 3%;
 	width: 1600px;
@@ -314,6 +314,33 @@ a.article, a.article:hover {
 }
 
 #RightMonth {
+	position: absolute;
+	top: 825px;
+	left: 58.5%;
+	float: right;
+	width: 35px;
+	height: 35px;
+	z-index: 5;
+}
+
+#weeklyChart-container
+{
+	padding: 3%;
+	width: 1600px;
+	height: 1010px;
+}
+
+#LeftWeek {
+	position: absolute;
+	top: 825px;
+	left: 55.5%;
+	float: left;
+	width: 35px;
+	height: 35px;
+	z-index: 5;
+}
+
+#RightWeek {
 	position: absolute;
 	top: 825px;
 	left: 58.5%;
