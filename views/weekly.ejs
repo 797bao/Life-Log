@@ -1,126 +1,84 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="UTF-8">
-    <title>Life Log</title>
-    <link href="/css/style.css" rel="stylesheet" type="text/css">
+  <link href="/css/style.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <title>Life Log</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+  </style>
+</head>
 
+<body style="background-color:#20201F">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+    <script src="weeklyChart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"
         integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="js/jquery-3.6.0.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-</head>
 
-<body>
-    <div class="chartMenu">
-        <h1 style="text-align:center;">Monthly Overiew</h1>
+    <script type="text/javascript">
+        $(document).ready(function () {
+          $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active');
+            $(this).toggleClass('active');
+          });
+        });
+    </script>
+
+    <div class="wrapper">
+        <!-- Sidebar Holder -->
+        <nav id="sidebar">
+          <div class="sidebar-header">
+            <h1>Life Log</h1>
+          </div>
+          <ul class="components">
+            <li>
+              <a href="log" >
+                <h2>
+                  Log
+                </h2>
+              </a>
+            </li>
+            <li>
+              <a href="#statSubmenu" data-toggle="collapse" aria-expanded="false">
+                <h2>
+                  Statistics
+                </h2>
+              </a>
+              <ul class="collapse list-unstyled" id="statSubmenu">
+                <li><a href="yearly"><h3>Yearly Summary</h3></a></li>
+                <li><a href="monthly"><h3>monthly Summary</h3></a></li>
+                <li><a href="weekly" style="background-color: #351c75ff;"><h3>Weekly Summary</h3></a></li>
+                <li><a href="goals"><h3>Goals</h3></a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+
+        <div id = "weeklyChart-container">
+          <canvas id="weeklyChart"></canvas>
+        </div>
+
+        <img id = "LeftWeek" src = "/images/LeftButton.png"></src>
+        <img id = "RightWeek" src = "/images/RightButton.png"></src>
         
-    </div>
-
-
-    <div class="container" style="height: 500px; width: 1000px; margin: 0 auto 100px;" >
-        <canvas id="myChart"></canvas>
-
         <script>
-            //to format year
-            var today = new Date();
-            var dataChart = document.getElementById('myChart').getContext('2d');
-            var monthlyChart = new Chart(dataChart, {
-                type: 'bar', // bar, horizontalBar, pie, line, doughnut, radar, polarArea
-                data:{
-                    labels:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                            'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
-                    datasets:[{
-                        label: 'Studying',
-                        data:[ 117, 181, 153, 156, 420, 450,
-                                57, 81, 106, 116, 220, 250    
-                        ],
-                        backgroundColor: [ //need to incorporate with user's picked color
-                            '#8e7cc3ff'
-                            
-                        ]
-                    }, {
-                            label: 'Gym',
-                            data: [50, 18, 15, 106, 120, 45,
-                                67, 81, 53, 16, 120, 45
-                            ],
-                            backgroundColor: [ //need to incorporate with user's picked color
-                                '#ba181b'
+          var userSessionData = <%-JSON.stringify(userData)-%>;
+          var userActivity = <%-JSON.stringify(userActivities)-%>;
+          var displayedWeek = <%-JSON.stringify(week)-%>;
+          displayWeeklyChart(userSessionData, userActivity, displayedWeek);
+          
+      </script>
 
-                            ]
-                    }, {
-                       label: 'Journaling',
-                        data: [ 12, 40, 17, 11, 15, 16,
-                                20, 50, 61, 20, 13, 30
-                        ],
-                        backgroundColor: [ //need to incorporate with user's picked color
-                            '#ffe66d'
-
-                        ] 
-                    }
-                ]
-                },
-                //not working, need to fix
-                options: {
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'right',
-                            title: {
-                                display: true,
-                                text: 'ACTIVITIES',
-                                color: '#FFF',
-                                size: 18
-                            },
-                            labels: {
-                                color: '#FFF'
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Overview of Activities: ' + today.getFullYear(),
-                            color: '#FFF',
-                            fontSize: 20
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Month',
-                                color: '#FFF',
-                                // fontSize: 20
-                            },
-                            ticks: {
-                                color: '#FFF',
-                                
-                            },
-                            stacked: true
-                        },
-
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Hours Spent on Activity',
-                                color: '#FFF',
-                                
-                            },
-                            ticks: {
-                                color: '#FFF'
-                            },
-                            stacked: true
-                        }
-                    }
-                    
-
-                }
-                
-            });
-
-        </script>
-    </div>
+       
+      </div>
 </body>
 
 </html>
