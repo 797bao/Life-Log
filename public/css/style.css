@@ -296,7 +296,7 @@ a.article, a.article:hover {
 	z-index: 5;
 }
 
-#monthlyChart-container
+#monthlyChart-container, #yearlyChart-container
 {
 	padding: 3%;
 	width: 1600px;
