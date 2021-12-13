@@ -4,6 +4,7 @@ var user_data;
 var user_date;
 var user_activities;
 var tooltipEnable = true;
+var ogIndex;
 
 dateMonthString[0] = 'Jan';
 dateMonthString[1] = 'Feb';
@@ -26,18 +27,118 @@ dayTypeString[4] = 'Thursday';
 dayTypeString[5] = 'Friday';
 dayTypeString[6] = 'Saturday';
 
+const closeModalButtons = document.querySelectorAll('[data-close-button]');
+
+document.getElementById('SelectButton').onclick = function changeContent() {
+
+   //getting the color mapped to the activity name
+   var activityColor;
+   for( var i = 0; i < user_activities.length; i++)
+   {
+      if(document.getElementById("dropdownActivity").value == user_activities[i].activityName)
+        activityColor = user_activities[i].color;
+   }
+   //putting the mapped color & name into an object
+   let updatedActivity = {
+      activityName: document.getElementById("dropdownActivity").value,
+      color: activityColor
+   };
+
+
+   //converting the select drop down start ime into usable date format
+   let startTime = String(document.getElementById("dropdownStartTime").value);
+   let hours = Number(startTime.substring(0, 2));
+   let minutes = Number(startTime.substring(3, 5));
+   startTime = new Date(user_date);
+   startTime.setHours(hours, minutes,0 ,0);
+
+   startTime = startTime.toISOString(); //converting it back to ISO format so database is consistent
+
+   //converting the select drop down start ime into usable date format
+   let endTime = String(document.getElementById("dropdownEndTime").value);
+   hours = Number(endTime.substring(0, 2));
+   minutes = Number(endTime.substring(3, 5));
+   endTime = new Date(user_date);
+   endTime.setHours(hours, minutes,0 ,0);
+
+   endTime = endTime.toISOString(); //converting it back to ISO format so database is consistent
+
+   //the new updated entry based on the modifications of the user
+   let updatedEntry = {
+      x: startTime,
+      x2: endTime,
+      userActivities: updatedActivity,
+      comments: document.getElementById("dropdownComments").value,
+      y: 0
+   };
+   console.log("select button");
+   user_data.splice(ogIndex, 1);
+   updateDatabase(user_data, updatedEntry);
+   displayPieChart(user_data, user_activities); 
+   //close the pop up
+   const modal = document.getElementById("modal");
+   modal.classList.remove('active');
+}
+
+document.getElementById('TrashButton').onclick = function changeContent() {
+   user_data.splice(ogIndex, 1);
+   displayLogChart(user_data);
+   displayPieChart(user_data, user_activities); 
+   //close the pop up
+   const modal = document.getElementById("modal");
+   modal.classList.remove('active');
+   //update the database
+   $.ajax({
+      url: '/log/UpdateEntries',
+      type: 'post',
+      data: JSON.stringify(user_data),
+      contentType: "application/json",
+      dataType: 'json'
+   });
+}
+
+function openModal(originalIndex, yOffset) {
+   const modal = document.getElementById("modal");
+   if (modal == null)
+      return
+   modal.style.top = ("" + (yOffset + 60)+ "px");
+   let startTimeString = new Date(user_data[originalIndex].x).toTimeString();
+   startTimeString = startTimeString.substring(0, 8);
+   let endTimeString = new Date(user_data[originalIndex].x2).toTimeString();
+   endTimeString = endTimeString.substring(0, 8);
+
+   modal.classList.add('active')
+   ogIndex = originalIndex;
+   document.getElementById("dropdownActivity").value = user_data[originalIndex].userActivities.activityName;
+   document.getElementById("dropdownStartTime").value = startTimeString;
+   document.getElementById("dropdownEndTime").value = endTimeString;
+   document.getElementById("dropdownComments").value = user_data[originalIndex].comments;
+}
+
+function closeModal(modal) {
+   if (modal == null) return
+   modal.classList.remove('active')
+}
+
+closeModalButtons.forEach(button => {
+   button.addEventListener('click', () => {
+      const modal = button.closest('.modal')
+      closeModal(modal)
+   })
+})
+
 $(document).ready(function () {
-   $('#Left').on('click', function () {
+   $('#LeftLogPage').on('click', function () {
       $('#container1').fadeTo(70, 0.75);
       $('#container1').fadeTo(70, 1);
- 
+
       user_date.setDate(user_date.getDate() - 1);
       updateDate(user_date);
 
       displayLogChart(user_data);
       displayPieChart(user_data, user_activities);
    })
-   $('#Right').on('click', function () {
+   $('#RightLogPage').on('click', function () {
       $('#container1').fadeTo(70, 0.75);
       $('#container1').fadeTo(70, 1);
 
@@ -51,51 +152,39 @@ $(document).ready(function () {
 
 function updateDatabase(draggedData, updatedEntry) {
 
-   console.log("UPDATING DATABASE---------------");
-
-   console.log("DRAGGED DATA ", draggedData);
-   console.log("new ENTRY ", updatedEntry);
-   // return;
-
-   //the dragged data was the only entry
+   console.log("draggedData " , draggedData);
+   console.log("updatedEntry " , updatedEntry);
    if (draggedData === undefined) {
-      // console.log("new user data undefined");
-      // console.log("new entry ", updatedEntry);
-      //must be in double (()) for some reason to register??
+      console.log("0");
       if ((updatedEntry == undefined)) {  //the user removed the dragged element
          user_data = user_data.splice(0, user_data.length);
-         // console.log("new entry does not exist, remove eveything ", user_data);
+         console.log("1");
       }
       else { //the user has removed the dragged element by dragging it past midnight
          user_data.splice(0, user_data.length); //remove all of the user's data
          user_data.push(updatedEntry); //push the new entry
-         // console.log("new entry is not null, it exists push it ", user_data);
+         console.log("2");
       }
    }
    else {
-      //must be in double (()) for some reason to register??
+      console.log("tf");
       if ((updatedEntry === undefined)) { //the user removed the dragged element
+         console.log("3");
          user_data = draggedData; //user's data is the data with dragged element removed
-         // console.log("user's data is the data with dragged element removed ", user_data);
+
       }
       else {
-         // console.log("new user Data ", draggedData);
-         // console.log("new entry ", updatedEntry);
+         console.log("4");
          user_data = placeNewEntryInOrder(draggedData, updatedEntry);
-         // console.log("placing new entry in order ,", user_data);
+         console.log("stuck placing in order");
       }
    }
-   // console.log('user data after ' ,user_data);
+   console.log("TESTING");
    displayLogChart(user_data);
-
 
    $.ajax({
       url: '/log/UpdateEntries',
       type: 'post',
-      // data: {
-      //    draggedData,
-      //    updatedEntry
-      // },
       data: JSON.stringify(user_data),
       contentType: "application/json",
       dataType: 'json'
@@ -103,14 +192,10 @@ function updateDatabase(draggedData, updatedEntry) {
 }
 
 function updateDate(newDate) {
-   // console.log("UPDATING NEW DATE ", newDate);
    $.ajax({
       url: '/log/UpdateDate',
       type: 'post',
-      // data: user_date
-      data: {newDate}
-      // contentType: "application/json",
-      // dataType: 'json'
+      data: { newDate }
    });
 }
 
@@ -143,31 +228,28 @@ function timestamp(millis) {
 }
 
 //passes in the user's data to be converted to UTC time so it can be displayed properly
-function getConvertedData(userSessionData)
-{
-   // console.log("CONVERTING DATA");
+function getConvertedData(userSessionData) {
    if (userSessionData.length > 0) {
-      return convertedData(userSessionData);  
-      // console.log("test,  " , dataDisplayed);
+      return convertedData(userSessionData);
    }
-   else { 
+   else {
       //by default there must be at least 1 logged entry to make this chart "Visually" correct
       //make a default placeholder entry that starts & ends at same time so it won't be displayed
       //if there is no entry, the 'categories' section won't be displayed not showing the date
       let placeholder = []
       let placeHolderEntry = {
-         x: new Date(), 
+         x: new Date(),
          x2: new Date(),
-         userActivities: { 
+         userActivities: {
             activityName: "placeholder",
-            color: "#ffffff" 
+            color: "#ffffff"
          },
          comments: "placeholder test",
          y: 0
       }
       placeholder.push(placeHolderEntry);
-      return convertedData(placeholder);  
-   } 
+      return convertedData(placeholder);
+   }
 }
 
 //DateTime in our database is local time
@@ -189,7 +271,7 @@ function convertedData(userSessionData) {
          color: element.userActivities.color,//userSessionData.color[0],
          y: 0,
          //holds a reference to the original data as we'll arrange the displayed data's array order to render on top
-         originalIndex: index++ 
+         originalIndex: index++
       })
    });
    return userData;
@@ -197,23 +279,16 @@ function convertedData(userSessionData) {
 
 //called from log.ejs, sets the session date so refreshing still persists the logChart for the date we're on
 function setUserDate(userDate) {
-   console.log("USER DATE BEING SET");
-
    user_date = new Date(userDate);
-   user_date.setHours(0,0,0,0);
-   console.log("What is the user date? ", user_date);
+   user_date.setHours(0, 0, 0, 0);
 }
 
 function displayLogChart(userSessionData) {
    user_data = userSessionData;
-   console.log("reassigning session data ", user_data);
    let dataDisplayed = getConvertedData(user_data);
-
-   console.log("redisplaying?");
    var dragging = false;
-   
+
    var nextDatePage = new Date(user_date);
-   console.log("USER DATE ?" , user_date);
    nextDatePage.setDate(user_date.getDate() + 1);
 
    var logChart = Highcharts.chart('container1', {
@@ -255,7 +330,7 @@ function displayLogChart(userSessionData) {
             animation: false,
             point: {
                events: {
-                  mouseOver: function(e) {
+                  mouseOver: function (e) {
                      mouseOverData = true;
                      //when hovering over a bar, only the last index will be rendered on top
                      //we must rearrange the array so that bar's index is last to be rendered on top of the bars
@@ -265,27 +340,35 @@ function displayLogChart(userSessionData) {
 
                         dataDisplayed = (leftSplice).concat(rightSplice).concat(dataDisplayed);
                         //removing all data & adding new data in will cause chart to cause mouseExit when it did not actually exit
-                        mouseOverData = false; 
+                        mouseOverData = false;
                         //does not modify any values, just rearranges the array's order so the mouseOvered data is displayed on top if the user were to drag
                         //this does not modify the user_data array which is the ordered array that we need to find out where to place the new entry & determine collisions
                         logChart.series[0].setData([]);
                         //Mouseout event will be fired right here as we removed the data we were originally hovering over ^
-                        logChart.series[0].setData(dataDisplayed);          
+                        logChart.series[0].setData(dataDisplayed);
                      }
                   },
                   dragStart: function (e) {
+                     console.log("drag start");
                      dragging = true;
+                  },
+                  click: function (e) {
+                     console.log("click");
+                     openModal(this.originalIndex, e.pageY);
                   },
                   drop: function (e) {
                      dragging = false;
+                     console.log("drop");
                      if (this.x == this.x2) //user removed the data
                      {
+                        console.log("if");
                         user_data.splice(this.originalIndex, 1);
                         let updatedEntry;
                         updateDatabase(user_data, updatedEntry);
                      }
                      else {
                         //converting back into the schema format 
+                        console.log("else");
                         let updatedActivity = {
                            activityName: this.activityName,
                            color: this.color
@@ -298,14 +381,13 @@ function displayLogChart(userSessionData) {
                            comments: this.comments,
                            y: 0
                         };
-                        // console.log("BEFORE SPLICE " , user_data);
-                        // console.log("THIS INDEX " , this.originalIndex);
+                        console.log("drop1");
                         user_data.splice(this.originalIndex, 1);
 
-                        // console.log("AFTER SPLICE " , user_data);
-                        // console.log("UPDATING: implementation");
+                        console.log("drop2");
                         updateDatabase(user_data, updatedEntry);
-                        displayPieChart(user_data,user_activities); //this is wrong <<<--- fix it
+                        console.log("drop3");
+                        displayPieChart(user_data, user_activities); //this is wrong <<<--- fix it
                      }
                   }
                }
@@ -369,15 +451,12 @@ function displayLogChart(userSessionData) {
 }
 
 function displayPieChart(userSessionData, activities) {
-   console.log("displaying pie chart");
    user_activities = activities;
    let todaysHours = getTodaysHours(user_data, activities);
    let totalHours = 0;
-   // console.log("TODAY HOURS ", todaysHours[0].y);
-   for (var i = 0; i < todaysHours.length; i++) 
-      totalHours += todaysHours[i].y;
 
-   // console.log("total hours ", totalHours);
+   for (var i = 0; i < todaysHours.length; i++)
+      totalHours += todaysHours[i].y;
    document.getElementById('TotalHours').innerHTML = duration(totalHours);
 
    Highcharts.chart('container2', {
@@ -413,12 +492,12 @@ function displayPieChart(userSessionData, activities) {
       plotOptions: {
          pie: {
             borderWidth: 0,
-            states : {
+            states: {
                inactive: {
                   opacity: 1
                },
                hover: {
-                  enabled : false
+                  enabled: false
                }
             },
             dataLabels: {
@@ -451,11 +530,11 @@ function getTodayIndex(array, search) {
          end = mid - 1;
       else if (arrayMidParsed < search)
          start = mid + 1;
-      else 
+      else
          break;
    }
    //ensures that the index is >= searched one
-   if (Date.parse(array[mid].x) < search) 
+   if (Date.parse(array[mid].x) < search)
       mid++;
    return mid;
 }
@@ -482,9 +561,6 @@ function getTodaysHours(userSessionData, userActivities) {
       else
          break;
    }
-
-   // console.log("starting index after ",startingIndex);
-
    //put all the activity names as strings into an array as the key
    let activityKey = [];
    for (var i = 0; i < userActivities.length; i++)
@@ -493,10 +569,10 @@ function getTodaysHours(userSessionData, userActivities) {
    //create a dictionary with the key being the name, and default y value as 0
    var convertedDict = {};
    colorIndex = 0;
-   activityKey.map(function(a) {
-      convertedDict[a] = {y: 0, color: userActivities[colorIndex++].color};
+   activityKey.map(function (a) {
+      convertedDict[a] = { y: 0, color: userActivities[colorIndex++].color };
    })
-   
+
    //we use a dictionary over regular array because otherwise we'd have to
    //create a nested loop inside to compare activity names if equal and accumulate them
    for (var i = 0; i < todayData.length; i++) {
@@ -507,10 +583,9 @@ function getTodaysHours(userSessionData, userActivities) {
 
    //convert back the dictionary into an array as pie chart can only take data in array format
    let pieChartData = []
-   for(var key in convertedDict) {
-      pieChartData.push( {name: key, y: convertedDict[key].y, color: convertedDict[key].color});
+   for (var key in convertedDict) {
+      pieChartData.push({ name: key, y: convertedDict[key].y, color: convertedDict[key].color });
    }
-   console.log("pie chart data " , pieChartData);
    return pieChartData;
 
 }
@@ -518,7 +593,6 @@ function getTodaysHours(userSessionData, userActivities) {
 function dateString(date) {
    let temp = '';
    temp += dateMonthString[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + '<br> ' + dayTypeString[date.getDay()];
-   // console.log("date string " + temp);
    return temp;
 }
 
@@ -576,25 +650,23 @@ function placeNewEntryInOrder(arr, newEntry) {
 
 //modified BST
 //returns index with starting time that is = OR < but closest to the inputted value
-function getIndex(array, search)
-{
+function getIndex(array, search) {
    let start = 0, end = array.length - 1, mid;
    while (start <= end) // <= end
    {
-       mid = Math.floor ((start + end)/2);
-       if (array[mid].x > search)
-           end = mid - 1;
-       else if (array[mid].x < search)
-           start = mid + 1;
-       else {
+      mid = Math.floor((start + end) / 2);
+      if (array[mid].x > search)
+         end = mid - 1;
+      else if (array[mid].x < search)
+         start = mid + 1;
+      else {
          console.log("BROKE BECASE NOT COMPARABLE");
          break;
-       }
- 
+      }
    }
    //ensures that the index is closest & less than to searched one, since regular BST only checks if the value exists
    if (mid != 0 && array[mid].x > search)
-       mid--;
+      mid--;
 
    return mid;
 }
@@ -619,7 +691,7 @@ function spliceCollisions(arr, index, collisions) {
       splices = splices.concat(leftSplice);
    }
    if (arr[index].x2 > collisions[1]) {
-      let rightSplice = { 
+      let rightSplice = {
          userActivities: arr[index].userActivities,
          x: collisions[1],
          x2: arr[index].x2,
@@ -634,28 +706,27 @@ function spliceCollisions(arr, index, collisions) {
 //does the new entry have a collision with the array at the inputted index?
 //returns an array of 2 numbers at the 2 points of collision or an empty array if no collision
 function getCollisions(arr, index, newEntry) {
-    let collisions = [];
-    if (newEntry.x < arr[index].x) { // start before they start
-        if (newEntry.x2 > arr[index].x) {//end after starting point
-            if (newEntry.x2 >= arr[index].x2) {//end at or past their ending point
-                collisions.push(arr[index].x);
-                collisions.push(arr[index].x2);
-            }
-            else {
-                collisions.push(arr[index].x);
-                collisions.push(newEntry.x2);
-            }
-        }
-    }
-    else if (newEntry.x < arr[index].x2) //start after they start & before they end
-    {
-      //   console.log("START AFTER ");
-        collisions.push(newEntry.x);
-        if (newEntry.x2 < arr[index].x2) //ended before they ended
-            collisions.push(newEntry.x2);
-        else
+   let collisions = [];
+   if (newEntry.x < arr[index].x) { // start before they start
+      if (newEntry.x2 > arr[index].x) {//end after starting point
+         if (newEntry.x2 >= arr[index].x2) {//end at or past their ending point
+            collisions.push(arr[index].x);
             collisions.push(arr[index].x2);
-    }
+         }
+         else {
+            collisions.push(arr[index].x);
+            collisions.push(newEntry.x2);
+         }
+      }
+   }
+   else if (newEntry.x < arr[index].x2) //start after they start & before they end
+   {
+      collisions.push(newEntry.x);
+      if (newEntry.x2 < arr[index].x2) //ended before they ended
+         collisions.push(newEntry.x2);
+      else
+         collisions.push(arr[index].x2);
+   }
 
-    return collisions;
+   return collisions;
 }

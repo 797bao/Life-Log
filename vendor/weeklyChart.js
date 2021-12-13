@@ -33,21 +33,18 @@ month[11] = "December";
 // .getDay = Sunday - Saturday : 0 - 6
 $(document).ready(function () {
   $('#LeftWeek').on('click', function () {
-    console.log("user_week before1" + user_week);
     user_week.setDate(user_week.getDate() - 7);
     updateSessionweek(user_week);
   })
   $('#RightWeek').on('click', function () {
-    console.log("user_week before2" + user_week);
     user_week.setDate(user_week.getDate() + 7);
     updateSessionweek(user_week);
-    
+
   })
 });
 
 function updateSessionweek(week) {
   weeklyChart.destroy();
-  console.log("user_week after" + user_week);
   displayWeeklyChart(user_data, user_activities, user_week);
   $.ajax({
     url: '/weekly/UpdateWeek',
@@ -56,14 +53,11 @@ function updateSessionweek(week) {
   });
 }
 
-
-
 //used to get x-axis info
 //.getDay =0-6 = saturday-sunday
 Date.prototype.getDayOfWeek = function () {
   return this.getDate() - weekStart.getDate();
 }
-
 
 //for the text above the graph showing what day the week starts an ends
 function getDayText() {
@@ -73,8 +67,6 @@ function getDayText() {
 function getDayText2() {
   return weekEnd.getDate();
 }
-
-
 
 //passes in the user's data to be converted to UTC time so it can be displayed properly
 function getConvertedData(userSessionData) {
@@ -89,17 +81,22 @@ function setWeek(week) {
   var millis = Date.parse(week); //parse to milliseconds
   week = new Date(millis);
   weekStart = new Date(millis);
-  weekStart.setDate(week.getDate()-4);
+
+  var dayOffset;
+  dayOffset = week.getDay();
+  if (dayOffset == 0)
+    dayOffset = 6;
+  else
+    dayOffset--;
+  weekStart.setDate(week.getDate() - dayOffset);
   weekStart.setHours(0, 0, 0, 0);
   weekEnd = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 6, 0);//question
-  
+
   //this is in milliseconds, dataSet must be between weekStart & firstDayNextWeek
   firstDayNextWeek = new Date(weekEnd).setDate(weekEnd.getDate() + 1);
   //cast back to comparable date that is same as database
   firstDayNextWeek = new Date(firstDayNextWeek).toISOString();
-
 }
-
 
 function initializeDatSets(userActivities) {
   let dataSets = [];
@@ -133,17 +130,14 @@ function populateActivityData(dataSets, userActivities, userSessionData) {
   activityKey.map(function (a) {
     dict[a] = { keyIndex: keyIndex++ };
   })
-console.log("dict" , dict);
   //get the first entry the date AFTER the first day of selected week
   var startingIndex = getTodayIndex(userSessionData, Date.parse(weekStart));
   //the month started after all of the user's entries
-    
+
   if (startingIndex == userSessionData.length)
-  
     return dataSets;
   while (startingIndex < userSessionData.length) { //index still within user data bounds
     if (userSessionData[startingIndex].x < firstDayNextWeek) {
-    
 
       let key = userSessionData[startingIndex].userActivities.activityName;
       keyIndex = dict[key].keyIndex; //determines which activity array it is in for dataSets
@@ -151,17 +145,13 @@ console.log("dict" , dict);
       //this is in terms of milliseconds, we must parse the isostring to a date to do calculations
       let hours = Date.parse(userSessionData[startingIndex].x2) - Date.parse(userSessionData[startingIndex].x);
       hours /= (60 * 60 * 1000);
-      
 
       //which day? (index) of the data[] within the dataSets activity, does this day reside in
       let dataIndex = new Date(userSessionData[startingIndex].x).getDayOfWeek(); //.getMonth?
       dataSets[keyIndex].data[dataIndex] += hours;
     }
     else if (userSessionData[startingIndex].x > firstDayNextWeek) //the user's data has passed this week
-    {
-      console.log("> tf why u greater")
       break;
-    }
     else { //the date is not of the same type and is not comparable, please fix your parsing
       console.log("not comparable");
       break;
@@ -192,11 +182,9 @@ function getTodayIndex(array, search) {
 
 //getting data from the database
 function getMonthText() {
-  var a =  weekStart.getMonth()
+  var a = weekStart.getMonth()
   return month[a];
 }
-
-
 
 function displayWeeklyChart(userSessionData, userActivities, week) {
   user_data = userSessionData;
@@ -216,87 +204,87 @@ function displayWeeklyChart(userSessionData, userActivities, week) {
     },
     options: {
       plugins: {
-          legend: {
-              display: true,
-              position: 'right',
-              title: { //to push down the legend
-                  display: true,
-                  text: 'ACTIVITIES',
-                  color: '#FFF',
-                  font: {
-                      family: 'Poppins',
-                      size: 20,
-                      weight: 500
-                  }
-              },
-              labels: {
-                  color: '#FFF',
-                  font: {
-                      family: 'Poppins',
-                      size: 14
-                  }
-              }
+        legend: {
+          display: true,
+          position: 'right',
+          title: { //to push down the legend
+            display: true,
+            text: 'ACTIVITIES',
+            color: '#FFF',
+            font: {
+              family: 'Poppins',
+              size: 20,
+              weight: 500
+            }
           },
-          title: {
-              display: true,
-              text:  "Days of the week: " +getMonthText() + " " + getDayText()+ " - " + getDayText2(),
-              color: '#FFF',
-              font: {
-                  family: 'Poppins',
-                  size: 40,
-                  weight: 500
-              }
+          labels: {
+            color: '#FFF',
+            font: {
+              family: 'Poppins',
+              size: 14
+            }
           }
+        },
+        title: {
+          display: true,
+          text: getMonthText() + " " + getDayText() + " - " + getMonthText() + " " + getDayText2(),
+          color: '#FFF',
+          font: {
+            family: 'Poppins',
+            size: 40,
+            weight: 500
+          }
+        }
       },
       scales: {
-          x: {
-              grid: {
-                  display: false
-              },
-              title: {
-                  display: true,
-                  text: 'Date',
-                  color: '#FFFFFF',
-                  font: {
-                      family: 'Poppins',
-                      size: 20,
-                      weight: 500
-                  }
-              },
-              ticks: {
-                  color: '#FFFFFF',
-                  font: {
-                      family: 'Poppins'
-                  }
-              },
-              stacked: true
+        x: {
+          grid: {
+            display: false
           },
+          title: {
+            display: true,
+            text: 'Date',
+            color: '#FFFFFF',
+            font: {
+              family: 'Poppins',
+              size: 20,
+              weight: 500
+            }
+          },
+          ticks: {
+            color: '#FFFFFF',
+            font: {
+              family: 'Poppins'
+            }
+          },
+          stacked: true
+        },
 
-          y: {
-              grid: {
-                  display: true,
-                  lineWidth: 0.25,
-                  color: '#949494',
-              },
-              title: {
-                  display: true,
-                  text: 'Hours',
-                  color: '#FFFFFF',
-                  font: {
-                      family: 'Poppins',
-                      size: 20,
-                      weight: 500
-                  }
-              },
-              ticks: {
-                  color: '#FFFFFF',
-                  font: {
-                      family: 'Poppins'
-                  }
-              },
-              stacked: true
-          }
+        y: {
+          grid: {
+            display: true,
+            lineWidth: 0.25,
+            color: '#949494',
+          },
+          title: {
+            display: true,
+            text: 'Hours',
+            color: '#FFFFFF',
+            font: {
+              family: 'Poppins',
+              size: 20,
+              weight: 500
+            }
+          },
+          ticks: {
+            color: '#FFFFFF',
+            font: {
+              family: 'Poppins'
+            }
+          },
+          stacked: true
+        }
       }
-  }
-});
+    }
+  });
 }

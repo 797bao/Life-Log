@@ -14,6 +14,9 @@ body {
 	color: var(--black-color);
 }
 
+
+  
+
 /* Typography */
 h1{
 	text-transform: uppercase;
@@ -229,6 +232,26 @@ a.article, a.article:hover {
 	z-index: 5;
 }
 
+#LeftLogPage {
+	position: absolute;
+	top: 950px;
+	left: 45%;
+	float: left;
+	width: 20px;
+	height: 20px;
+	z-index: 5;
+}
+
+#RightLogPage {
+	position: absolute;
+	top: 950px;
+	left: 59.8%;
+	float: right;
+	width: 20px;
+	height: 20px;
+	z-index: 5;
+}
+
 #div3 {
 	position: absolute;
 	top: 10px;
@@ -264,7 +287,41 @@ a.article, a.article:hover {
     border-radius: 10px;
 }
 
+.dropdown  {
+	border-width: 1px;
+	border-color: white;
+    outline: 2;
+    overflow: hidden;
+    height: 30px;
+	width:200px;
+	background-color: var(--black-color);
+	color: white;
+    padding-left: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
 #button {
+	border-width: 1px;
+	border-color: var(--dark-color);
+	background-color:var(--primary-color);
+	/* border-color: --primary-color;
+		/* border-color: rgb(37, 18, 85); */
+	/* background-color:var(--dark-color); */ 
+
+	font-weight:normal;
+	margin-top: 5px;
+	width: 100px;
+	height:60px;
+	color: white;
+
+	/* padding: 5px; */
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+#SelectButton {
 	border-width: 1px;
 	border-color: var(--dark-color);
 	background-color:var(--primary-color);
@@ -349,3 +406,51 @@ a.article, a.article:hover {
 	height: 35px;
 	z-index: 5;
 }
+
+.modal {
+	position: fixed;
+	top: 50%;
+	left: 53.9%;
+	transform: translate(-50%, -50%) scale(0);
+	transition: 200ms ease-in-out;
+	border: 1px solid black;
+	border-radius: 10px;
+	z-index: 10;
+	background-color: #212121;
+	width: 300px;
+	max-width: 80%;
+  }
+  
+  .modal.active {
+	transform: translate(-53.9%, -50%) scale(1);
+  }
+  
+  .modal-header {
+	color:white;
+	padding: 10px 15px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid white;
+  }
+  
+  .modal-header .title {
+	font-size: 1.25rem;
+	font-weight: bold;
+  }
+  
+  .modal .close-button {
+	padding-left: 15px;
+	color:White;
+	cursor: pointer;
+	border: none;
+	outline: none;
+	background: none;
+	font-size: 1.25rem;
+	font-weight: bold;
+  }
+  
+  .modal-body {
+	color: white;
+	padding: 10px 15px;
+  }

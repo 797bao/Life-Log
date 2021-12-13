@@ -73,8 +73,6 @@ router.post('/logActivity', (req, res) => {
 
 //Occurs when the user does the drag event modifying the entry
 router.post('/UpdateEntries', (req, res) => {
-    console.log("--------------UPDATE---------------\n\n")
-    console.log("req body " , req.body);
     req.session.user.userData = req.body; //updates the session's data
     req.session.save(); //saves session data
 
@@ -87,7 +85,6 @@ router.post('/UpdateEntries', (req, res) => {
             console.log('successfully updated id');
     });
 });
-
 
 //helper method to create a new entry object based on the form input
 function createNewEntry(req, startTime, endTime)
@@ -232,7 +229,6 @@ function getCollisions(arr, index, newEntry) {
     }
     else if (newEntry.x < arr[index].x2) //start after they start & before they end
     {
-        console.log("START AFTER ");
         collisions.push(newEntry.x);
         if (newEntry.x2 < arr[index].x2) //ended before they ended
             collisions.push(newEntry.x2);

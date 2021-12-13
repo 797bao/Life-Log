@@ -2,7 +2,6 @@
 <html>
 <head>
   <link href="/css/style.css" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <meta charset="UTF-8">
   <title>Life Log</title>
 </head>
@@ -22,6 +21,21 @@
   <script src="js/jquery-3.6.0.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
 
+  <div class="modal" id="modal">
+    <select id = 'dropdownActivity' class = "dropdown" name="userActivities" id="cars">
+      <% for(var i = 0; i < userActivities.length; i++) { %>
+        <option><%= userActivities[i].activityName %></option>  
+      <% }; %>
+    </select> 
+    <button data-close-button class="close-button">&times;</button>
+    <img id = "TrashButton" src = "/images/TrashIcon.png"></src>
+    <br>
+    <input id = 'dropdownStartTime' class = "dropdown" type="time" placeholder="Start Time" name="x" required><br>
+    <input id = 'dropdownEndTime' class = "dropdown" type="time" placeholder="End Time" name="x2" required><br>
+    <input id = 'dropdownComments' class = "dropdown" type="text" placeholder="Comments" name="comments" required><br>
+    <button id = 'SelectButton' class = "dropdown" type="submit">Update <br> Activity</button>
+  </div>
+  
   <script type="text/javascript">
     $(document).ready(function () {
       $('#sidebarCollapse').on('click', function () {
@@ -60,10 +74,12 @@
         </li>
       </ul>
     </nav>
+
+
     
     <div id="content">
-      <img id = "Left" src = "/images/LeftButton.png"></src>
-      <img id = "Right" src = "/images/RightButton.png"></src>
+      <img id = "LeftLogPage" src = "/images/LeftButton.png"></src>
+      <img id = "RightLogPage" src = "/images/RightButton.png"></src>
       <figure class="highcharts-figure">
         <div id="container1"></div>
         <style>
@@ -117,7 +133,5 @@
   </div>
 
 </body>
-
-<div id="dragstatus"></div>
 
 </html>
