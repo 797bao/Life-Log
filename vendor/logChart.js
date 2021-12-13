@@ -98,9 +98,11 @@ document.getElementById('TrashButton').onclick = function changeContent() {
 }
 
 function openModal(originalIndex, yOffset) {
+   console.log("opening the pop up");
    const modal = document.getElementById("modal");
    if (modal == null)
       return
+   console.log("modal ", modal );
    modal.style.top = ("" + (yOffset + 60)+ "px");
    let startTimeString = new Date(user_data[originalIndex].x).toTimeString();
    startTimeString = startTimeString.substring(0, 8);

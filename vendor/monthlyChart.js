@@ -212,7 +212,7 @@ function displayMonthlyChart(userSessionData, userActivities, month) {
                 },
                 title: {
                     display: true,
-                    text: getMonthText(),
+                    text: getMonthText() + " " + user_month.getFullYear(),
                     color: '#FFF',
                     font: {
                         family: 'Poppins',

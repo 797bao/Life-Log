@@ -186,6 +186,11 @@ function getMonthText() {
   return month[a];
 }
 
+function getEndMonthText() {
+  var a = weekEnd.getMonth()
+  return month[a];
+}
+
 function displayWeeklyChart(userSessionData, userActivities, week) {
   user_data = userSessionData;
   user_activities = userActivities;
@@ -227,7 +232,7 @@ function displayWeeklyChart(userSessionData, userActivities, week) {
         },
         title: {
           display: true,
-          text: getMonthText() + " " + getDayText() + " - " + getMonthText() + " " + getDayText2(),
+          text: getMonthText() + " " + getDayText() + " - " + getEndMonthText() + " " + getDayText2() + ", " + user_week.getFullYear(),
           color: '#FFF',
           font: {
             family: 'Poppins',
