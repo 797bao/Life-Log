@@ -282,13 +282,34 @@ a.article, a.article:hover {
 	z-index: 5;
 }
 
-#dropdown  {
+.Validation{
+	color:red;
+	font-family: 'Lato', sans-serif;
+	padding-left:6px;
+	font-size:13px;
+	width: 200px;
+	display:none;
+}
+
+
+#logEntryComments{
+	height: 100px;
+	resize:none;
+}
+
+#updateEntryComments{
+	height: 100px;
+	resize:none;
+}
+
+.RoundedBox {
 	border-width: 1px;
 	border-color: white;
     outline: 2;
     overflow: hidden;
     height: 30px;
 	width:200px;
+	margin:3px;
 	background-color: var(--black-color);
 	color: white;
     padding-left: 10px;
@@ -297,41 +318,8 @@ a.article, a.article:hover {
     border-radius: 10px;
 }
 
-.dropdown  {
-	border-width: 1px;
-	border-color: white;
-    outline: 2;
-    overflow: hidden;
-    height: 30px;
-	width:200px;
-	background-color: var(--black-color);
-	color: white;
-    padding-left: 10px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 
-#button {
-	border-width: 1px;
-	border-color: var(--dark-color);
-	background-color:var(--primary-color);
-	/* border-color: --primary-color;
-		/* border-color: rgb(37, 18, 85); */
-	/* background-color:var(--dark-color); */ 
-
-	font-weight:normal;
-	margin-top: 5px;
-	width: 100px;
-	height:60px;
-	color: white;
-
-	/* padding: 5px; */
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
-#SelectButton {
+.button {
 	border-width: 1px;
 	border-color: var(--dark-color);
 	background-color:var(--primary-color);
@@ -422,7 +410,7 @@ a.article, a.article:hover {
 	top: 50%;
 	left: 53.9%;
 	transform: translate(-50%, -50%) scale(0);
-	transition: 200ms ease-in-out;
+	transition: 100ms ease-in-out;
 	border: 1px solid black;
 	border-radius: 10px;
 	z-index: 10;

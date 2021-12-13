@@ -1,10 +1,11 @@
+//-------------setting Constants & defining variables -----------------------
 var dateMonthString = new Array(12);
 var dayTypeString = new Array(7);
 var user_data;
 var user_date;
 var user_activities;
-var tooltipEnable = true;
 var ogIndex;
+var validTimeInputs = true;
 
 dateMonthString[0] = 'Jan';
 dateMonthString[1] = 'Feb';
@@ -29,99 +30,6 @@ dayTypeString[6] = 'Saturday';
 
 const closeModalButtons = document.querySelectorAll('[data-close-button]');
 
-document.getElementById('SelectButton').onclick = function changeContent() {
-
-   //getting the color mapped to the activity name
-   var activityColor;
-   for( var i = 0; i < user_activities.length; i++)
-   {
-      if(document.getElementById("dropdownActivity").value == user_activities[i].activityName)
-        activityColor = user_activities[i].color;
-   }
-   //putting the mapped color & name into an object
-   let updatedActivity = {
-      activityName: document.getElementById("dropdownActivity").value,
-      color: activityColor
-   };
-
-
-   //converting the select drop down start ime into usable date format
-   let startTime = String(document.getElementById("dropdownStartTime").value);
-   let hours = Number(startTime.substring(0, 2));
-   let minutes = Number(startTime.substring(3, 5));
-   startTime = new Date(user_date);
-   startTime.setHours(hours, minutes,0 ,0);
-
-   startTime = startTime.toISOString(); //converting it back to ISO format so database is consistent
-
-   //converting the select drop down start ime into usable date format
-   let endTime = String(document.getElementById("dropdownEndTime").value);
-   hours = Number(endTime.substring(0, 2));
-   minutes = Number(endTime.substring(3, 5));
-   endTime = new Date(user_date);
-   endTime.setHours(hours, minutes,0 ,0);
-
-   endTime = endTime.toISOString(); //converting it back to ISO format so database is consistent
-
-   //the new updated entry based on the modifications of the user
-   let updatedEntry = {
-      x: startTime,
-      x2: endTime,
-      userActivities: updatedActivity,
-      comments: document.getElementById("dropdownComments").value,
-      y: 0
-   };
-   console.log("select button");
-   user_data.splice(ogIndex, 1);
-   updateDatabase(user_data, updatedEntry);
-   displayPieChart(user_data, user_activities); 
-   //close the pop up
-   const modal = document.getElementById("modal");
-   modal.classList.remove('active');
-}
-
-document.getElementById('TrashButton').onclick = function changeContent() {
-   user_data.splice(ogIndex, 1);
-   displayLogChart(user_data);
-   displayPieChart(user_data, user_activities); 
-   //close the pop up
-   const modal = document.getElementById("modal");
-   modal.classList.remove('active');
-   //update the database
-   $.ajax({
-      url: '/log/UpdateEntries',
-      type: 'post',
-      data: JSON.stringify(user_data),
-      contentType: "application/json",
-      dataType: 'json'
-   });
-}
-
-function openModal(originalIndex, yOffset) {
-   console.log("opening the pop up");
-   const modal = document.getElementById("modal");
-   if (modal == null)
-      return
-   console.log("modal ", modal );
-   modal.style.top = ("" + (yOffset + 60)+ "px");
-   let startTimeString = new Date(user_data[originalIndex].x).toTimeString();
-   startTimeString = startTimeString.substring(0, 8);
-   let endTimeString = new Date(user_data[originalIndex].x2).toTimeString();
-   endTimeString = endTimeString.substring(0, 8);
-
-   modal.classList.add('active')
-   ogIndex = originalIndex;
-   document.getElementById("dropdownActivity").value = user_data[originalIndex].userActivities.activityName;
-   document.getElementById("dropdownStartTime").value = startTimeString;
-   document.getElementById("dropdownEndTime").value = endTimeString;
-   document.getElementById("dropdownComments").value = user_data[originalIndex].comments;
-}
-
-function closeModal(modal) {
-   if (modal == null) return
-   modal.classList.remove('active')
-}
-
 closeModalButtons.forEach(button => {
    button.addEventListener('click', () => {
       const modal = button.closest('.modal')
@@ -129,6 +37,137 @@ closeModalButtons.forEach(button => {
    })
 })
 
+//------------------------------Form Event Handlers--------------------------------------------
+
+//if the user has selected a non blank activity, remove the error validation prompts
+document.getElementById("logEntryActivityValidation").onchange = function checkErrors() {
+   if(document.getElementById("logEntryActivityValidation").value.length > 0) {
+      document.getElementById("logEntryActivityValidation").style = "none";
+      document.getElementById("logEntryActivityValidation").innerHTML = "";
+   }
+}
+
+//when user changes the start time field in of the log entry
+document.getElementById("logEntryStartTime").onchange = function checkErrors() {
+   document.getElementById("logEntryStartTime").style.borderColor = "#FFFFFF";
+   document.getElementById("logEntryStartTimeValidation").style.display = "none"
+   document.getElementById("logEntryStartTimeValidation").innerHTML = "";
+
+   validateStartingEndingTimes("logEntryStartTime", "logEntryEndTime", "logEntryEndTimeValidation");
+}
+
+//when user changes the end time field in of the log entry
+document.getElementById("logEntryEndTime").onchange = function checkErrors() {
+   document.getElementById("logEntryEndTime").style.borderColor = "#FFFFFF";
+   document.getElementById("logEntryEndTimeValidation").style.display = "none"
+   document.getElementById("logEntryEndTimeValidation").innerHTML = "";
+
+   validateStartingEndingTimes("logEntryStartTime", "logEntryEndTime", "logEntryEndTimeValidation");
+}
+
+//when user changes the start time field in of the pop up
+document.getElementById("updateEntryStartTime").onchange = function checkErrors() {
+   document.getElementById("updateEntryStartTime").style.borderColor = "#FFFFFF";
+   document.getElementById("updateEntryStartTimeValidation").style.display = "none"
+   document.getElementById("updateEntryStartTimeValidation").innerHTML = "";
+
+   validateStartingEndingTimes("updateEntryStartTime", "updateEntryEndTime", "updateEntryEndTimeValidation");
+}
+
+//when user changes the end time field in of the pop up
+document.getElementById("updateEntryEndTime").onchange = function checkErrors() {
+   document.getElementById("updateEntryEndTime").style.borderColor = "#FFFFFF";
+   document.getElementById("updateEntryEndTimeValidation").style.display = "none"
+   document.getElementById("updateEntryEndTimeValidation").innerHTML = "";
+
+   validateStartingEndingTimes("updateEntryStartTime", "updateEntryEndTime", "updateEntryEndTimeValidation");
+}
+
+//clicking the Update Entry Button from the pop up
+document.getElementById('updateEntry').onclick = function changeContent() {
+   let activity = document.getElementById("updateEntryActivity").value;
+   let startTime = document.getElementById("updateEntryStartTime").value;
+   let endTime = document.getElementById("updateEntryEndTime").value;
+   let comments = document.getElementById("updateEntryComments").value;
+
+   let invalidInput = false;
+   if(startTime.length == 0) {
+      document.getElementById("updateEntryStartTime").style.borderColor = "#FF0000";
+      document.getElementById("updateEntryStartTimeValidation").innerHTML = "Starting Time not filled";
+      document.getElementById("updateEntryStartTimeValidation").style.display = "inline-block";
+      invalidInput = true;
+   }   
+   if(endTime.length == 0) {
+      document.getElementById("updateEntryEndTime").style.borderColor = "#FF0000";
+      document.getElementById("updateEntryEndTimeValidation").innerHTML = "Ending Time not filled";
+      document.getElementById("updateEntryEndTimeValidation").style.display = "inline-block";
+      invalidInput = true;
+   }
+   if (invalidInput || !validTimeInputs)
+      return;
+
+   let newEntry = createNewEntryFromDocumentValues(startTime, endTime, activity, comments)
+   user_data.splice(ogIndex, 1); //removes the entry you selected
+   insertNewEntry(newEntry);   //inserts the new entry
+   //close the pop ups
+   const modal = document.getElementById("modal");
+   modal.classList.remove('active');
+}
+
+//clicking the Log Entry Button from right side
+document.getElementById('logEntry').onclick = function changeContent() {
+   let activity = document.getElementById("logEntryActivity").value;
+   let startTime = document.getElementById("logEntryStartTime").value;
+   let endTime = document.getElementById("logEntryEndTime").value;
+   let comments = document.getElementById("logEntryComments").value;
+
+   let invalidInput = false;
+   if (activity.length == 0) {
+      invalidInput = true;
+      document.getElementById("logEntryActivityValidation").innerHTML = "Must Select an Activity";
+      document.getElementById("logEntryActivityValidation").style.display = "inline-block";
+   }
+   if(startTime.length == 0) {
+      document.getElementById("logEntryStartTime").style.borderColor = "#FF0000";
+      document.getElementById("logEntryStartTimeValidation").innerHTML = "Starting Time not filled";
+      document.getElementById("logEntryStartTimeValidation").style.display = "inline-block";
+      invalidInput = true;
+   }   
+   if(endTime.length == 0) {
+      document.getElementById("logEntryEndTime").style.borderColor = "#FF0000";
+      document.getElementById("logEntryEndTimeValidation").innerHTML = "Ending Time not filled";
+      document.getElementById("logEntryEndTimeValidation").style.display = "inline-block";
+      invalidInput = true;
+   }
+   if (invalidInput || !validTimeInputs)
+      return;
+
+   let newEntry = createNewEntryFromDocumentValues(startTime, endTime, activity, comments)
+   insertNewEntry(newEntry);  //inserts the new entry
+   //close the pop ups
+   const modal = document.getElementById("modal");
+   modal.classList.remove('active');
+
+   //resets the input field values to empty
+   document.getElementById("logEntryActivity").value = "";
+   if (user_activities.length > 0)
+      document.getElementById("logEntryActivity").value = user_activities[0].activityName;
+   document.getElementById("logEntryStartTime").value = "";
+   document.getElementById("logEntryEndTime").value = "";
+   document.getElementById("logEntryComments").value = "";
+}
+
+//clicking the trash button
+document.getElementById('TrashButton').onclick = function changeContent() {
+   user_data.splice(ogIndex, 1);
+   redrawCharts();
+   //close the pop up
+   const modal = document.getElementById("modal");
+   modal.classList.remove('active');
+   updateDatabase();
+}
+
+//clicking the left & right arrow keys
 $(document).ready(function () {
    $('#LeftLogPage').on('click', function () {
       $('#container1').fadeTo(70, 0.75);
@@ -136,9 +175,7 @@ $(document).ready(function () {
 
       user_date.setDate(user_date.getDate() - 1);
       updateDate(user_date);
-
-      displayLogChart(user_data);
-      displayPieChart(user_data, user_activities);
+      redrawCharts();
    })
    $('#RightLogPage').on('click', function () {
       $('#container1').fadeTo(70, 0.75);
@@ -146,44 +183,137 @@ $(document).ready(function () {
 
       user_date.setDate(user_date.getDate() + 1);
       updateDate(user_date);
-
-      displayLogChart(user_data);
-      displayPieChart(user_data, user_activities);
+      redrawCharts();
    })
 });
+//------------------------------End Event Handlers--------------------------------------------
 
-function updateDatabase(draggedData, updatedEntry) {
 
-   console.log("draggedData " , draggedData);
-   console.log("updatedEntry " , updatedEntry);
-   if (draggedData === undefined) {
-      console.log("0");
-      if ((updatedEntry == undefined)) {  //the user removed the dragged element
-         user_data = user_data.splice(0, user_data.length);
-         console.log("1");
-      }
-      else { //the user has removed the dragged element by dragging it past midnight
-         user_data.splice(0, user_data.length); //remove all of the user's data
-         user_data.push(updatedEntry); //push the new entry
-         console.log("2");
-      }
-   }
+function validateStartingEndingTimes(startTimeId, endTimeId, validationId)
+{
+   let startTimeString = document.getElementById(startTimeId).value;
+   let endTimeString = document.getElementById(endTimeId).value;
+
+   if (endTimeString.length == 0 || startTimeString.length == 0) //both fields not filled out yet
+      validTimeInputs = false;
    else {
-      console.log("tf");
-      if ((updatedEntry === undefined)) { //the user removed the dragged element
-         console.log("3");
-         user_data = draggedData; //user's data is the data with dragged element removed
+      let startTimeHours = startTimeString.substring(0, 2);
+      let startTimeMinutes = startTimeString.substring(3, 5);
+      let endTimeHours = endTimeString.substring(0, 2);
+      let endTimeMinutes = endTimeString.substring(3, 5);
 
+      let startTime = Number(startTimeHours) + Number(startTimeMinutes)/60;
+      let endTime = Number(endTimeHours) + Number(endTimeMinutes)/60;
+
+      validTimeInputs = endTime > startTime? true: false;
+
+      if (!validTimeInputs) {
+         document.getElementById(endTimeId).style.borderColor = "#FF0000";
+         document.getElementById(startTimeId).style.borderColor = "#FF0000";
+         document.getElementById(validationId).style.display = "inline-block"
+         document.getElementById(validationId).innerHTML = "Ending Time must be greater than Starting Time";
       }
       else {
-         console.log("4");
-         user_data = placeNewEntryInOrder(draggedData, updatedEntry);
-         console.log("stuck placing in order");
+         document.getElementById(endTimeId).style.borderColor = "#FFFFFF";
+         document.getElementById(startTimeId).style.borderColor = "#FFFFFF";
+         document.getElementById(validationId).style.display = "none"
+         document.getElementById(validationId).innerHTML = "";
       }
    }
-   console.log("TESTING");
-   displayLogChart(user_data);
+}
 
+//returns object of new entry from the extracted drop down input values of the document
+function createNewEntryFromDocumentValues(startTime, endTime, activity, comments)
+{
+   //getting the color mapped to the activity name
+   var activityColor;
+   for( var i = 0; i < user_activities.length; i++)
+   {
+      if(activity == user_activities[i].activityName)
+        activityColor = user_activities[i].color;
+   }
+   //putting the mapped color & name into an object
+   let updatedActivity = {
+      activityName: activity,
+      color: activityColor
+   };
+
+   let hours = Number(startTime.substring(0, 2));
+   let minutes = Number(startTime.substring(3, 5));
+   startTime = new Date(user_date);
+   startTime.setHours(hours, minutes,0 ,0);
+   startTime = startTime.toISOString(); //converting it back to ISO format so database is consistent
+
+   hours = Number(endTime.substring(0, 2));
+   minutes = Number(endTime.substring(3, 5));
+   endTime = new Date(user_date);
+   endTime.setHours(hours, minutes,0 ,0);
+   endTime = endTime.toISOString(); //converting it back to ISO format so database is consistent
+
+   //the new updated entry based on the modifications of the user
+   let updatedEntry = {
+      x: startTime,
+      x2: endTime,
+      userActivities: updatedActivity,
+      comments: comments,
+      y: 0
+   };
+   return updatedEntry;
+}
+
+//opens the pop up
+function openModal(originalIndex, yOffset) {
+   const modal = document.getElementById("modal");
+   if (modal == null)
+      return
+
+   if (yOffset > 730)
+      yOffset = 730;
+   modal.style.top = ("" + (yOffset + 125)+ "px");
+   let startTimeString = new Date(user_data[originalIndex].x).toTimeString();
+   startTimeString = startTimeString.substring(0, 8);
+   let endTimeString = new Date(user_data[originalIndex].x2).toTimeString();
+   endTimeString = endTimeString.substring(0, 8);
+
+   modal.classList.add('active')
+   ogIndex = originalIndex;
+   document.getElementById("updateEntryActivity").value = user_data[originalIndex].userActivities.activityName;
+   document.getElementById("updateEntryStartTime").value = startTimeString;
+   document.getElementById("updateEntryEndTime").value = endTimeString;
+   document.getElementById("updateEntryComments").value = user_data[originalIndex].comments;
+}
+
+//closes pop up
+function closeModal(modal) {
+   if (modal == null) return
+   modal.classList.remove('active')
+}
+
+
+function insertNewEntry(updatedEntry) {
+
+   //The new entry does not exist, only possible by using the drag/drag handles
+   //The user has removed the dragge element by pushing past midnight or collapsing both handles
+   if (updatedEntry !== undefined) 
+   {
+      //user has not logged any entries at all
+      if (user_data === undefined || user_data.length === 0) 
+         user_data.push(updatedEntry); //push the new entry
+      else
+         user_data = placeNewEntryInOrder(user_data, updatedEntry);
+   }
+   redrawCharts();
+   updateDatabase();
+}
+
+function redrawCharts()
+{
+   displayLogChart(user_data);
+   displayPieChart(user_data, user_activities);
+}
+
+function updateDatabase()
+{
    $.ajax({
       url: '/log/UpdateEntries',
       type: 'post',
@@ -296,7 +426,7 @@ function displayLogChart(userSessionData) {
    var logChart = Highcharts.chart('container1', {
       overflow: true,
       tooltip: {
-         enabled: tooltipEnable,
+         enabled: true,
          useHTML: true,
          hideDelay: 100,
          positioner: function (labelWidth, labelHeight, point) {
@@ -307,10 +437,14 @@ function displayLogChart(userSessionData) {
          },
 
          formatter: function () {
+            if (this.point.comments.length == 0){
+               return this.point.activityName + '<br> ' +
+                  timestamp(this.point.x) + ' - ' + timestamp(this.point.x2) + '<br>' +
+                  duration(this.x2 - this.x) ;
+            }
             return this.point.activityName + '<br> ' +
                timestamp(this.point.x) + ' - ' + timestamp(this.point.x2) + '<br>' +
-               duration(this.x2 - this.x) + '<br><br> ' +
-               this.point.comments;
+               duration(this.x2 - this.x) + '<br><br> ' + addNewlines(this.point.comments, 28);
          }
       },
       plotOptions: {
@@ -351,31 +485,27 @@ function displayLogChart(userSessionData) {
                      }
                   },
                   dragStart: function (e) {
-                     console.log("drag start");
                      dragging = true;
                   },
                   click: function (e) {
-                     console.log("click");
+
                      openModal(this.originalIndex, e.pageY);
                   },
                   drop: function (e) {
                      dragging = false;
-                     console.log("drop");
-                     if (this.x == this.x2) //user removed the data
+                     if (this.x == this.x2) //user removed the data by collapsing handles or dragging past midnight
                      {
-                        console.log("if");
-                        user_data.splice(this.originalIndex, 1);
-                        let updatedEntry;
-                        updateDatabase(user_data, updatedEntry);
+                        user_data.splice(this.originalIndex, 1); //remove the index
+                        let newEntry;
+                        insertNewEntry(newEntry); 
                      }
                      else {
                         //converting back into the schema format 
-                        console.log("else");
                         let updatedActivity = {
                            activityName: this.activityName,
                            color: this.color
                         };
-                        let updatedEntry = {
+                        let newEntry = {
                            //convert back to UTC time format, 8 hours ahead in form of milliseconds
                            x: new Date((this.x + 8 * 3600 * 1000)).toISOString(), //mongoose stores dates as iso string in database, convert to compare them
                            x2: new Date((this.x2 + 8 * 3600 * 1000)).toISOString(), //mongoose stores dates string in database, convert to compare them
@@ -383,13 +513,8 @@ function displayLogChart(userSessionData) {
                            comments: this.comments,
                            y: 0
                         };
-                        console.log("drop1");
-                        user_data.splice(this.originalIndex, 1);
-
-                        console.log("drop2");
-                        updateDatabase(user_data, updatedEntry);
-                        console.log("drop3");
-                        displayPieChart(user_data, user_activities); //this is wrong <<<--- fix it
+                        user_data.splice(this.originalIndex, 1); //removes old dragged element
+                        insertNewEntry(newEntry); //inserts in the modified dragged element's data
                      }
                   }
                }
@@ -399,7 +524,7 @@ function displayLogChart(userSessionData) {
       chart: {
          type: 'xrange',
          backgroundColor: '#20201F',
-         width: 450,
+         width: 550,
          height: 965,
          inverted: true,
       },
@@ -518,6 +643,17 @@ function displayPieChart(userSessionData, activities) {
 
 }
 
+//used to add new lines to the tooltip for the comments so it doesn't overflow
+function addNewlines(str, length) {
+   var result = '';
+   while (str.length > 0) {
+     result += str.substring(0, length) + '<br>';
+     str = str.substring(length);
+   }
+   return result;
+ }
+
+//-----------Helper methods for inserting data in order & displaying data------------
 //modified BST
 //returns index with starting time that is = OR > but closest to the inputted value
 function getTodayIndex(array, search) {
@@ -610,9 +746,6 @@ function placeNewEntryInOrder(arr, newEntry) {
    let spliceStart = startingIndex;
    let leftCollision = getCollisions(arr, startingIndex, newEntry)
 
-   // console.log('starting index ,' , startingIndex);
-   // console.log('leftCollision  ,' , leftCollision);
-   // return;
    if (leftCollision.length != 0) { //left side has a collision
        leftSplices = spliceCollisions(arr, startingIndex, leftCollision)
        collisionCount++;
@@ -729,6 +862,6 @@ function getCollisions(arr, index, newEntry) {
       else
          collisions.push(arr[index].x2);
    }
-
    return collisions;
 }
+//-----------End Helper methods for inserting data in order & displaying data------------

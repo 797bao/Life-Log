@@ -23,7 +23,7 @@
   <script src="js/bootstrap.min.js"></script>
 
   <div class="modal" id="modal">
-    <select id = 'dropdownActivity' class = "dropdown" name="userActivities" id="cars">
+    <select id = 'updateEntryActivity'  class = "RoundedBox" name="userActivities" id="cars">
       <% for(var i = 0; i < userActivities.length; i++) { %>
         <option><%= userActivities[i].activityName %></option>  
       <% }; %>
@@ -31,12 +31,14 @@
     <button data-close-button class="close-button">&times;</button>
     <img id = "TrashButton" src = "/images/TrashIcon.png"></src>
     <br>
-    <input id = 'dropdownStartTime' class = "dropdown" type="time" placeholder="Start Time" name="x" min = "00:00" max = "24:00" required><br>
-    <input id = 'dropdownEndTime' class = "dropdown" type="time" placeholder="End Time" name="x2" required><br>
-    <input id = 'dropdownComments' class = "dropdown" type="text" placeholder="Comments" name="comments" ><br>
-    <button id = 'SelectButton' class = "dropdown" type="submit">Update <br> Activity</button>
+    <input id = 'updateEntryStartTime' class = "RoundedBox" type="time" placeholder="Start Time" name="x" min = "00:00" max = "24:00" required><br>
+    <text id = 'updateEntryStartTimeValidation' class = 'Validation'></text>
+    <input id = 'updateEntryEndTime' class = "RoundedBox" type="time" placeholder="End Time" name="x2" required><br>
+    <text id = 'updateEntryEndTimeValidation' class = 'Validation'></text>
+    <textarea maxlength="100" id = 'updateEntryComments' class = 'RoundedBox' placeholder="Comments" name="comments" ></textarea><br>
+    <button id = 'updateEntry' class = "button" type="submit">Update <br> Entry</button>
   </div>
-  
+
   <script type="text/javascript">
     $(document).ready(function () {
       $('#sidebarCollapse').on('click', function () {
@@ -78,6 +80,29 @@
     </nav>
 
 
+    <div id = "div4">
+      <form action="/log/createActivity" method="POST">
+        <input type="color" placeholder="Color" name="color" required><br>
+        <input class = 'RoundedBox' type="text" placeholder="Activity Name" name="activityName" required><br>
+        <button class = 'button' type="submit">Create <br> Activity</button>
+        <br><br><br><br>
+      </form>
+
+
+      <select id = 'logEntryActivity' class = 'RoundedBox' name="userActivities" id="cars">
+        <% for(var i = 0; i < userActivities.length; i++) { %>
+          <option><%= userActivities[i].activityName %></option>  
+        <% }; %>
+      </select>
+      <text id = 'logEntryActivityValidation' class = 'Validation'></text><br>
+      <input id = 'logEntryStartTime' class = 'RoundedBox' type="time" placeholder="Start Time" name="x" required><br>
+      <text id = 'logEntryStartTimeValidation' class = 'Validation'></text>
+      <input id = 'logEntryEndTime' class = 'RoundedBox' type="time" placeholder="End Time" name="x2" required><br>
+      <text id = 'logEntryEndTimeValidation' class = 'Validation'></text>
+      <textarea maxlength="100" id = 'logEntryComments' class = 'RoundedBox' placeholder="Comments" name="comments" ></textarea><br>
+      <button id = 'logEntry' class = 'button' type="submit">Log <br> Entry</button>
+
+    </div>
     
     <div id="content">
       <img id = "LeftLogPage" src = "/images/LeftButton.png"></src>
@@ -111,26 +136,6 @@
         displayPieChart(userSessionData, activities);
       </script>
 
-    </div>
-    <div id = "div4">
-      <form action="/log/createActivity" method="POST">
-        <input type="color" placeholder="Color" name="color" required><br>
-        <input id = 'dropdown' type="text" placeholder="Activity Name" name="activityName" required><br>
-        <button id = 'button' type="submit">Create <br> Activity</button>
-        <br><br><br><br>
-      </form>
-
-      <form action="/log/logActivity" method="POST">
-        <select id = 'dropdown' name="userActivities" id="cars">
-          <% for(var i = 0; i < userActivities.length; i++) { %>
-            <option><%= userActivities[i].activityName %></option>  
-          <% }; %>
-        </select> <br>
-        <input id = 'dropdown' type="time" placeholder="Start Time" name="x" required><br>
-        <input id = 'dropdown' type="time" placeholder="End Time" name="x2" required><br>
-        <input id = 'dropdown' type="text" placeholder="Comments" name="comments" ><br>
-        <button id = 'button' type="submit">Log <br> Activity</button>
-      </form>
     </div>
   </div>
 
