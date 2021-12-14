@@ -23,9 +23,9 @@
   <script src="js/bootstrap.min.js"></script>
 
   <div class="modal" id="modal">
-    <select id = 'updateEntryActivity'  class = "RoundedBox" name="userActivities" id="cars">
+    <select id = 'updateEntryActivity'  class = "RoundedBox" name="userActivities">
       <% for(var i = 0; i < userActivities.length; i++) { %>
-        <option><%= userActivities[i].activityName %></option>  
+        <option value = "<%= userActivities[i].activityName %>"><%= userActivities[i].activityName %></option>  
       <% }; %>
     </select> 
     <button data-close-button class="close-button">&times;</button>
@@ -89,9 +89,9 @@
       </form>
 
 
-      <select id = 'logEntryActivity' class = 'RoundedBox' name="userActivities" id="cars">
+      <select id = 'logEntryActivity' class = 'RoundedBox' name="userActivities">
         <% for(var i = 0; i < userActivities.length; i++) { %>
-          <option><%= userActivities[i].activityName %></option>  
+          <option value = "<%= userActivities[i].activityName %>"><%= userActivities[i].activityName %></option>  
         <% }; %>
       </select>
       <text id = 'logEntryActivityValidation' class = 'Validation'></text><br>

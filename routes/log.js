@@ -32,7 +32,7 @@ router.post('/createActivity', (req, res) => {
             console.log('successfully activityList');
     });
     res.redirect('/log'); 
- }); 
+}); 
 
 //Occurs when the user adds/removes/updates entries from the database
 //1. Pressing Log Entry Button

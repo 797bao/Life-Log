@@ -9,6 +9,14 @@ const userSchema = mongoose.Schema({
     year: Date, //holds the session data of of year to store & modify it when user flips through pages
     week: Date, //holds the session data of of week to store & modify it when user flips through pages
 
+    allGoals: [{
+        userActivities: {         //mapping the name & color
+            activityName: { type: String},
+            color: { type:String}
+        },
+        total: {type: Number}
+    }],
+
     userActivities: [{
         activityName: { type: String},
         color : { type: String},
