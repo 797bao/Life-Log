@@ -704,12 +704,14 @@ function getTodaysHours(userSessionData, userActivities) {
    for (var i = 0; i < userActivities.length; i++)
       activityKey.push(userActivities[i].activityName);
 
+
    //create a dictionary with the key being the name, and default y value as 0
    var convertedDict = {};
    colorIndex = 0;
    activityKey.map(function (a) {
       convertedDict[a] = { y: 0, color: userActivities[colorIndex++].color };
    })
+
 
    //we use a dictionary over regular array because otherwise we'd have to
    //create a nested loop inside to compare activity names if equal and accumulate them
@@ -781,7 +783,6 @@ function placeNewEntryInOrder(arr, newEntry) {
    let newUserData = arr.slice(0, spliceStart).concat(newEntryAndSplices).concat(arr.slice(spliceStart)); //add back in the new entry & splices
    return newUserData;
 }
-
 
 //modified BST
 //returns index with starting time that is = OR < but closest to the inputted value
