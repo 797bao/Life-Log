@@ -6,7 +6,7 @@ const User = require('../models/user')
 
 
 router.get('/', (req, res) => {
-    console.log("the req data ", req.session.user.allGoals);
+
     res.render('goals.ejs', {userData: req.session.user.userData, allGoals: req.session.user.allGoals, userActivities:req.session.user.userActivities}); 
 
 
@@ -14,8 +14,6 @@ router.get('/', (req, res) => {
 
 router.post('/createGoal', (req, res) => {
     console.log("Creating goal" , req.body);
-
-
 
     var activityColor;
     for( var i = 0; i < req.session.user.userActivities.length; i++)
@@ -64,7 +62,6 @@ router.post('/deleteGoal', (req, res) => {
             
             res.redirect('/goals');
         }
-
     });
 });
 
