@@ -3,13 +3,17 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const User = require('../models/user')
 
+
+
 router.get('/', (req, res) => {
-    console.log("Loading Monthly page");
+    console.log("the req data ", req.session.user.allGoals);
     res.render('goals.ejs', {userData: req.session.user.userData, allGoals: req.session.user.allGoals, userActivities:req.session.user.userActivities}); 
+
+
 });
 
 router.post('/createGoal', (req, res) => {
-    console.log("Creating goal" , req.body.userActivities);
+    console.log("Creating goal" , req.body);
 
 
 
@@ -25,24 +29,45 @@ router.post('/createGoal', (req, res) => {
        color: activityColor
     };
 
-    console.log("updated activity ", updatedActivity);
-    // var activityColor;
-    // for( var i = 0; i < user_activities.length; i++)
-    // {
-    //    if(req.body.allGoals == user_activities[i].activityName)
-    //      activityColor = user_activities[i].color;
-    // }
+    let newGoal = {
+        userActivities: updatedActivity,
+        total: req.body.totalHours
+    }
+    let userGoals = req.session.user.allGoals;
+    userGoals.push(newGoal);
 
-    // newUserActivities.push(newEntry);
-    // User.findByIdAndUpdate({_id: req.session.user._id}, {userActivities: newUserActivities}, {useFindAndModify:true}, function(err, res) {
-    //     if (err)
-    //         console.log('err, ID not found', err);
-    //     else
-    //         console.log('successfully activityList');
-    // });
-    // res.redirect('/log'); 
+    req.session.save(function(err) {
+        if(err)
+        {
+            console.log("err");
+        }
+        else
+            res.redirect('/goals');
+    });
 
-    res.redirect('/goals');
+
+    // res.redirect('/goals');
 });
+
+router.post('/deleteGoal', (req, res) => {
+    console.log("deleting goal" , req.body);
+    let goals = req.body;
+    req.session.user.allGoals = goals;
+    req.session.save(function(err) {
+        if(err)
+        {
+            console.log("err");
+        }
+        else {
+            console.log("Redirecting now");
+            console.log(req.session.user.allGoals);
+            
+            res.redirect('/goals');
+        }
+
+    });
+});
+
+
 
 module.exports = router;

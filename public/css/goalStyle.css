@@ -6,7 +6,7 @@
 }
 
 body {
-	background-color: #212121;
+	background-color: white;
 	font-size: 16px;
 	font-family: 'Lato', sans-serif;
 	font-weight: 300;
@@ -436,6 +436,51 @@ a.article, a.article:hover {
 	border-bottom: 1px solid white;
   }
   
+
+  
+  .Goals{
+	  position: relative;
+	  display: inline-block;
+
+	font-family: "Arial", Helvetica, sans-serif;
+
+	/* color:var(--black-color); */
+	color: #f1f1f1;
+	font-size: 35px;
+	text-align: center;
+	width: 300px;
+	height: 50px;
+	margin:10px;
+	margin-left:50px;
+	border-radius: 25px;
+  }
+
+  .Goals .tooltiptext{
+	visibility: hidden;
+	width: 120px;
+	background-color: #555;
+	color: #fff;
+	text-align: center;
+	padding: 5px 0;
+	border-radius: 6px;
+  
+	/* Position the tooltip text */
+	position: absolute;
+	z-index: 1;
+	bottom: 125%;
+	left: 50%;
+	margin-left: -60px;
+  
+	/* Fade in tooltip */
+	opacity: 0;
+	transition: opacity 0.3s;
+  }
+
+  .Goals:hover .tooltiptext {
+	visibility: visible;
+	opacity: 1;
+  }
+  
   .modal-header .title {
 	font-size: 1.25rem;
 	font-weight: bold;
@@ -456,6 +501,14 @@ a.article, a.article:hover {
 	color: white;
 	padding: 10px 15px;
   }
+
+.trash {
+	padding-left:20px;
+	margin-bottom:15px;
+	width: 50px;
+	height: auto;
+
+}
 
   .RoundedBox {
 	border-width: 1px;

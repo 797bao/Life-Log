@@ -10,11 +10,14 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="js/jquery-3.6.0.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+  crossorigin="anonymous"></script>
+
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 
 
-<body style="background-color:#20201F">
+<body>
   <div class="wrapper">
     <!-- Sidebar Holder -->
     <nav id="sidebar">
@@ -54,20 +57,27 @@
     </nav>
 
     <div id="content">
+  
       <form action="/goals/createGoal" method="POST">
-        <select id = 'updateEntryActivity'  class = "RoundedBox" name="userActivities" id="cars">
+        <select id = 'updateEntryActivity'  class = "RoundedBox" name="userActivities">
           <% for(var i = 0; i < userActivities.length; i++) { %>
             <option><%= userActivities[i].activityName %></option>  
           <% }; %>
         </select> 
-        <input type ="number" class='RoundedBox' type="text" placeholder="Total Hours" name="totalHours"  required><br>
+        <input type ="number" max ="10000" onkeypress="return event.charCode >= 48" min = "1" class='RoundedBox' type="text" placeholder="Total Hours" name="totalHours"  required><br>
         <button class='button' type="submit">Set <br> Goal</button>
         <br><br><br><br>
       </form>
 
-      <% for(var i = 0; i < allGoals.length; i++) { %>
-        <%console.log("I")%>
-      <% }; %>
+      <script src = "goalChart.js"></script>
+      <script>
+          var userSessionData = <%-JSON.stringify(userData) %>;
+          var goals = <%-JSON.stringify(allGoals) %>;
+          var activities = <%-JSON.stringify(userActivities) %>;
+          <%console.log("testing ejs reload")%>
+          console.log("testing ejs jreload5252");
+          displayGoals(userSessionData, goals, activities);
+      </script>
 
     </div>
 
