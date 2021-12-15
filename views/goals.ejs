@@ -69,6 +69,7 @@
         <br><br><br><br>
       </form>
 
+      <div id = "goalsTooltip">
       <script src = "goalChart.js"></script>
       <script>
           var userSessionData = <%-JSON.stringify(userData) %>;
@@ -78,9 +79,11 @@
           displayGoals(userSessionData, goals, activities);
       </script>
 
+
+
     </div>
 
-    <div id = "goals">
+
 
     </div>
   </div>

@@ -436,7 +436,23 @@ a.article, a.article:hover {
 	border-bottom: 1px solid white;
   }
   
+	#goalsTooltip {
+		visibility: hidden;
+		position:fixed;
+		border-radius: 10px;
+		padding-top:12px;
+		text-align: center;
+		opacity: .8;
+		margin-left:100px;
+		top: 148px;
 
+		z-index: 5;
+		color:white;
+		width: 200px;
+		height:40px;
+		font-size:16px;
+		background-color: rgb(17, 17, 17);
+	}
   
   .Goals{
 	  position: relative;
@@ -455,37 +471,25 @@ a.article, a.article:hover {
 	border-radius: 25px;
   }
 
-  .Goals .tooltiptext{
-	visibility: hidden;
-	width: 120px;
-	background-color: #555;
-	color: #fff;
-	text-align: center;
-	padding: 5px 0;
-	border-radius: 6px;
-  
-	/* Position the tooltip text */
-	position: absolute;
-	z-index: 1;
-	bottom: 125%;
-	left: 50%;
-	margin-left: -60px;
-  
-	/* Fade in tooltip */
-	opacity: 0;
-	transition: opacity 0.3s;
-  }
+	.tooltiptext{
 
-  .Goals:hover .tooltiptext {
-	visibility: visible;
-	opacity: 1;
-  }
-  
-  .modal-header .title {
-	font-size: 1.25rem;
-	font-weight: bold;
-  }
-  
+	position: relative;
+	display: inline-block;
+	font-family: "Arial", Helvetica, sans-serif;
+	/* color:var(--black-color); */
+	color: #f1f1f1;
+	font-size: 35px;
+	text-align: center;
+	width: 300px;
+	height: 50px;
+	margin:10px;
+	margin-left:50px;
+	border-radius: 25px;
+	}
+
+
+
+
   .modal .close-button {
 	padding-left: 15px;
 	color:White;

@@ -28,12 +28,14 @@ function displayLabels() {
    length = user_goals.length;
    for(var i = 0; i < user_goals.length; i++) {
       var sum = convertedDict[user_goals[i].userActivities.activityName].y;
-      var percentage = Math.round(sum/user_goals[i].total*1000)/10;
+
       sum = Math.round(sum * 10) / 10;
 
       var goalOutOfTotal = sum + "/" + goals[i].total;
+      var tooltipId = "tooltip" + i;
 
-      $('#content').append('<div id="' + i + '" class="Goals" title = ' + percentage + "%    " + '</div>');
+      $('#content').append('<div id="' + i + '" class="Goals"> <span id = "' + tooltipId + '" class = "tooltiptext"> Tootiip text</span></div>');
+
       var trashId = "trash" + i;
       $('#content').append('<img id = ' + trashId + ' class = "trash" src = "/images/TrashButtonLarge.png"></src><br>');
 
@@ -42,6 +44,23 @@ function displayLabels() {
       document.getElementById(i).style.backgroundColor = user_goals[i].userActivities.color;
       document.getElementById(i).style.color = "white"; //color contraster later
       
+      //display tooltip hover handler
+      document.getElementById(i).onmouseover = function () {
+         var bounds = document.getElementById(this.id).getBoundingClientRect();
+         var y = (bounds.top) - 33;
+         var index = (Number)(this.id);
+
+         var sum2 = convertedDict[user_goals[index].userActivities.activityName].y;
+         var percentage = Math.round(sum2/user_goals[index].total*1000)/10;
+         document.getElementById("goalsTooltip").innerHTML = percentage + "% completed";
+         document.getElementById("goalsTooltip").style.top = y+"px";
+         document.getElementById("goalsTooltip").style.visibility = "visible";
+      }
+      //hide tooltip
+      document.getElementById(i).onmouseleave = function () {
+         document.getElementById("goalsTooltip").style.visibility = "hidden";
+      }
+
       //assigning the click event handler
       document.getElementById('trash' + i).onclick = function changeContent(id) {
          var id = Number(this.id.substring(5));
@@ -63,6 +82,8 @@ function displayLabels() {
   
          });
       }
+
+
    }
 }
 
@@ -71,18 +92,13 @@ function calculateTotals(userSessionData, activities)
 {
    activityKey = [];
    convertedDict = {};
-
-   console.log("calledo nce");
    for (var i = 0; i < activities.length; i++)
       activityKey.push(activities[i].activityName);
-
    //create a dictionary with the key being the name, and default y value as 0
    colorIndex = 0;
 
    activityKey.map(function (a) {
-      console.log("converetd dict " , activities[colorIndex]);
       convertedDict[a] = { y: 0, color: activities[colorIndex++].color };
-
    })
    for (var i = 0; i < userSessionData.length; i++)
    {
