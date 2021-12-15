@@ -1,6 +1,23 @@
 # Life-Log
 
-How to download & run the application
+The project was made using Node.js, Javascript, and the following frameworks
+ 1.   "chart.js": "^3.6.0",
+ 2.   "connect-flash": "^0.1.1",
+ 3.   "connect-mongodb-session": "^2.4.1",
+ 4.   "ejs": "^3.1.6",
+ 5.   "express": "^4.17.1",
+ 6.   "express-session": "^1.17.1",
+ 7.   "flash": "^1.1.0",
+ 8.   "highcharts": "^9.3.1",
+ 9.   "mongoose": "^6.0.5",
+ 10.  "nodemon": "^2.0.13
+ 
+This application is intended to be used as a personalized log and habit builder.
+Users will create activities and log these entries into a visual time table to see all their trends and habits.
+Users can leave comments on what they did for each activity and can view a visual of all their statistics through the statistics tab.
+
+
+# How to download & run the application
 
 1. Download Node
 https://nodejs.org/en/download/
